@@ -11,6 +11,7 @@ package sistema;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.JsonNode;
+import io.jsonwebtoken.Claims;
 
 import java.net.*; 
 import java.io.*; 
@@ -33,15 +34,18 @@ public class Servidor extends Thread
  private static List<Socket> clientesConectados = new ArrayList<>();
  BufferedReader in;
  PrintWriter out;
-// public createJWT jwt;
+ int setPorta;
 
-
- public static void main(String[] args) throws IOException 
+    public Servidor(int porta) {
+         // Inicializa o objeto servidorView
+         this.setPorta = porta;
+    }
+ public void iniciarServidor() throws IOException 
    { 
     ServerSocket serverSocket = null; 
 
     try { 
-         serverSocket = new ServerSocket(10008); 
+         serverSocket = new ServerSocket(setPorta); 
          System.out.println ("Connection Socket Created");
          try { 
               while (serverContinue)
@@ -65,7 +69,7 @@ public class Servidor extends Thread
         } 
     catch (IOException e) 
         { 
-         System.err.println("Could not listen on port: 10008."); 
+         System.err.println("Could not listen on port: "+setPorta); 
          System.exit(1); 
         } 
     finally
@@ -76,7 +80,7 @@ public class Servidor extends Thread
              }
          catch (IOException e)
              { 
-              System.err.println("Could not close port: 10008."); 
+              System.err.println("Could not close port: "+setPorta); 
               System.exit(1); 
              } 
         }
@@ -104,7 +108,6 @@ public class Servidor extends Thread
 
                 System.out.println("Cliente conectado do IP: " + clientIP + ", Porta: " + clientPort);
 
-                // Adicione o socket do cliente à lista de clientes conectados
                 clientesConectados.add(clientSocket);
                 
     try { 
@@ -123,62 +126,96 @@ public class Servidor extends Thread
          
          while ((inputLine = in.readLine())!=null) 
             { 
-                //inputLine = in.readLine(); 
+
                 ObjectMapper objectMapper = new ObjectMapper();
                 ObjectNode receivedJson = objectMapper.readValue(inputLine, ObjectNode.class);
                 String action = receivedJson.get("action").asText();
                 JsonNode dataNode = receivedJson.get("data");
                 ObjectNode responseJson = objectMapper.createObjectNode();
 
-//                String[] valores = inputLine.split(",");
-//                String response ="";
-              
-             if(action.equals("register")){
+
+             if(action.equals("cadastro-usuario")){
                 try {
+                    String token = dataNode.get("token").asText();
+                    Claims claims = createJWT.verifyJwtToken(token);
+                    System.out.println(claims);
+
                     String consultaInsercao;
                     String email = dataNode.get("email").asText();
                     String password = dataNode.get("password").asText();
                     String name = dataNode.get("name").asText();
-                    System.out.println(email);
-                    System.out.println(name);
-                    if (password != null && !password.isEmpty() && email != null && !email.isEmpty() && name != null && !name.isEmpty()) {
-//                    String token = "";
-                        consultaInsercao = "INSERT INTO `usuarios`(`nome`, `senha`, `email`) VALUES ('"+ name +"','"+password+"','"+email+"')";
+                    int type = dataNode.get("type").asInt();
 
-                       // Crie um PreparedStatement
+                    if (password != null && !password.isEmpty() && email != null && !email.isEmpty() && name != null && !name.isEmpty()) {
+                        consultaInsercao = "INSERT INTO `usuarios`(`nome`, `senha`, `email`,`isAdmin`) VALUES ('"+ name +"','"+password+"','"+email+"','"+type+"')";
+
                          PreparedStatement preparedStatement;
                          preparedStatement = conexao.prepareStatement(consultaInsercao);
 
-                       // Execute a instrução de inserção
                        int linhasAfetadas = preparedStatement.executeUpdate();
                        if(linhasAfetadas == 1){
                                 responseJson = objectMapper.createObjectNode();
-                                responseJson.put("action", "register");
+                                responseJson.put("action", "cadastro-usuario");
                                 responseJson.put("error", false);
-                                responseJson.put("message", "cadastrado com sucesso");
+                                responseJson.put("message", "Usuário cadastrado com sucesso!");
                                 ObjectNode dataResponse = objectMapper.createObjectNode();
-//                              dataResponse.put("token", "dka3i92fjsi4j9f29jf92j");
                                 responseJson.set("data", dataResponse);
-    //                            objectMapper.writeValue(out, responseJson);
-    //                         response = "sucess";
+
                        }else{
                                 responseJson = objectMapper.createObjectNode();
-                                responseJson.put("action", "register");
+                                responseJson.put("action", "cadastro-usuario");
                                 responseJson.put("error",true);
                                 responseJson.put("message", "erro ao cadastrar");
                                 ObjectNode dataResponse = objectMapper.createObjectNode();
-//                              dataResponse.put("token", "dka3i92fjsi4j9f29jf92j");
                                 responseJson.set("data", dataResponse);
-    //                            objectMapper.writeValue(out, responseJson);
                        }
-                        //ResultSet respClient = conexao.createStatement().executeUpdate();
                     } else {
                         responseJson = objectMapper.createObjectNode();
-                        responseJson.put("action", "register");
+                        responseJson.put("action", "cadastro-usuario");
                         responseJson.put("error",true);
                         responseJson.put("message", "todos os dados devem ser preenchidos");
                         ObjectNode dataResponse = objectMapper.createObjectNode();
-//                       dataResponse.put("token", "dka3i92fjsi4j9f29jf92j");
+                        responseJson.set("data", dataResponse);
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
+                }
+             } else if(action.equals("autocadastro-usuario")){
+                try {
+
+                    String consultaInsercao;
+                    String email = dataNode.get("email").asText();
+                    String password = dataNode.get("password").asText();
+                    String name = dataNode.get("name").asText();
+
+                    if (password != null && !password.isEmpty() && email != null && !email.isEmpty() && name != null && !name.isEmpty()) {
+                        consultaInsercao = "INSERT INTO `usuarios`(`nome`, `senha`, `email`) VALUES ('"+ name +"','"+password+"','"+email+"')";
+
+                         PreparedStatement preparedStatement;
+                         preparedStatement = conexao.prepareStatement(consultaInsercao);
+
+                       int linhasAfetadas = preparedStatement.executeUpdate();
+                       if(linhasAfetadas == 1){
+                                responseJson = objectMapper.createObjectNode();
+                                responseJson.put("action", "autocadastro-usuario");
+                                responseJson.put("error", false);
+                                responseJson.put("message", "Usuário cadastrado com sucesso!");
+                                ObjectNode dataResponse = objectMapper.createObjectNode();
+                                responseJson.set("data", dataResponse);
+                       }else{
+                                responseJson = objectMapper.createObjectNode();
+                                responseJson.put("action", "autocadastro-usuario");
+                                responseJson.put("error",true);
+                                responseJson.put("message", "erro ao cadastrar");
+                                ObjectNode dataResponse = objectMapper.createObjectNode();
+                                responseJson.set("data", dataResponse);
+                       }
+                    } else {
+                        responseJson = objectMapper.createObjectNode();
+                        responseJson.put("action", "autocadastro-usuario");
+                        responseJson.put("error",true);
+                        responseJson.put("message", "todos os dados devem ser preenchidos");
+                        ObjectNode dataResponse = objectMapper.createObjectNode();
                         responseJson.set("data", dataResponse);
                     }
                 } catch (SQLException ex) {
@@ -188,10 +225,11 @@ public class Servidor extends Thread
                  
                 String email = dataNode.get("email").asText();
                 String password = dataNode.get("password").asText();
-                String consultaSelecao = "SELECT * FROM usuarios WHERE email = ? AND senha = ?";
+                String token;
 
                 if(password != null && !password.isEmpty() && email != null && !email.isEmpty()){
                     try {
+                        String consultaSelecao = "SELECT * FROM usuarios WHERE email = ? AND senha = ?";
                         PreparedStatement preparedStatement;
                         preparedStatement = conexao.prepareStatement(consultaSelecao);
 
@@ -207,24 +245,14 @@ public class Servidor extends Thread
                             responseJson.put("message", "logado com sucesso");
                             ObjectNode dataResponse = objectMapper.createObjectNode();
                             
-                            int userId = resultSet.getInt("id");
-                            String userIdStr = Integer.toString(userId);
-                            int userAdmin = resultSet.getInt("isAdmin");
-                            boolean isAdmin = false;
-                            isAdmin = userAdmin == 1;
+                            String userId = resultSet.getString("id");
+                            boolean userAdmin = resultSet.getBoolean("isAdmin");
                             
-                            String token = createJWT.generateJwtToken(userIdStr,isAdmin);
-                            
+                            token = createJWT.generateJwtToken(userId,userAdmin);
+
                             dataResponse.put("token", token);
                             responseJson.set("data", dataResponse);
-//                            objectMapper.writeValue(out, responseJson);
-
-//                            if(resultSet.getInt("tipo") == 1){
-//                                
-////                                response = "admin";
-//                            } else {
-////                                response = "sucess";
-//                            }
+                           
                         } else {
                             responseJson = objectMapper.createObjectNode();
                             responseJson.put("action", "login");
@@ -233,12 +261,10 @@ public class Servidor extends Thread
                             ObjectNode dataResponse = objectMapper.createObjectNode();
                             dataResponse.put("token", "dka3i92fjsi4j9f29jf92j");
                             responseJson.set("data", dataResponse);
-//                            objectMapper.writeValue(out, responseJson);
 
                         }
                     } catch (SQLException e) {
                         e.printStackTrace();
-                        // Lide com a exceção apropriadamente
                     }
                 }
              }else if(action.equals("logout")){
@@ -248,28 +274,19 @@ public class Servidor extends Thread
                 responseJson.put("message", "logout efetuado com sucesso");
              }
                 
-//                objectMapper.writeValue(out, responseJson);
                 String jsonString=objectMapper.writeValueAsString(responseJson);
                 out.println(jsonString);
-                System.out.println("morte 12");
-//              out.println(  response); 
 
               if (inputLine.equals("logout")) 
                   break; 
-//
-//              if (inputLine.equals("End Server.")) 
-//                  serverContinue = false; 
 
              } 
         Date dataAtual = new Date();
 
-        // Define o formato desejado para a hora
         SimpleDateFormat formato = new SimpleDateFormat("HH:mm:ss");
 
-        // Formata a data atual no formato desejado
         String horaFormatada = formato.format(dataAtual);
 
-        // Exibe a hora formatada
         System.out.println("Hora atual: " + horaFormatada);
          System.out.println("Cliente conectado saiu");
          out.close(); 

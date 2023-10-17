@@ -15,13 +15,25 @@ import sistema.Cliente;
  */
 public class indexCliente extends javax.swing.JFrame {
     public Cliente cliente;
-
+    private String authToken;
+    public String ip;
+    public int porta;
     /**
      * Creates new form indexCliente
+     * @param token
+     * @param ip
+     * @param porta
      */
-    public indexCliente() {
+//    public indexCliente() {
+//        initComponents();
+//        cliente = Cliente.getInstance("127.0.0.1", 10008);
+//    }
+    public indexCliente(String token,String ip,int porta) {
         initComponents();
-        cliente = Cliente.getInstance("127.0.0.1", 10008);
+        this.authToken = token;
+        cliente = Cliente.getInstance(ip, porta);
+        this.ip = ip;
+        this.porta = porta;
     }
 
     /**
@@ -66,9 +78,9 @@ public class indexCliente extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(69, 69, 69)
+                .addGap(77, 77, 77)
                 .addComponent(jLabel1)
-                .addGap(79, 79, 79)
+                .addGap(71, 71, 71)
                 .addComponent(btnLogout)
                 .addContainerGap(104, Short.MAX_VALUE))
         );
@@ -83,7 +95,7 @@ public class indexCliente extends javax.swing.JFrame {
         if(isError){
             mostrarAviso(retorno.get("message").asText());
         }else{
-            login login = new login();
+            login login = new login(ip,porta);
             this.dispose();
             login.setVisible(true);
             login.mostrarAviso(retorno.get("message").asText());
@@ -92,38 +104,38 @@ public class indexCliente extends javax.swing.JFrame {
 
     /**
      * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(indexCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(indexCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(indexCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(indexCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new indexCliente().setVisible(true);
-            }
-        });
-    }
+//     */
+//    public static void main(String args[]) {
+//        /* Set the Nimbus look and feel */
+//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+//         */
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException ex) {
+//            java.util.logging.Logger.getLogger(indexCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (InstantiationException ex) {
+//            java.util.logging.Logger.getLogger(indexCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (IllegalAccessException ex) {
+//            java.util.logging.Logger.getLogger(indexCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(indexCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+//        //</editor-fold>
+//
+//        /* Create and display the form */
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                new indexCliente().setVisible(true);
+//            }
+//        });
+//    }
 private ObjectNode logout() {
         ObjectNode respostaDoServidor;
         ObjectMapper objectMapper = new ObjectMapper();
@@ -133,12 +145,10 @@ private ObjectNode logout() {
         jsonToSend.put("action", "logout");
 
         ObjectNode data = objectMapper.createObjectNode();
-        data.put("token", "daskdoa93d9qu3d1!@");
+        data.put("token", authToken);
         jsonToSend.set("data", data);
 
-        // Aqui você pode realizar a ação de logout, por exemplo, enviar o JSON para um servidor
-        // ou executar a lógica necessária para efetuar o logout.
-        // Neste exemplo, apenas mostraremos o JSON no console.
+
         respostaDoServidor = cliente.enviarSolicitacao(jsonToSend);
         return respostaDoServidor;
 }

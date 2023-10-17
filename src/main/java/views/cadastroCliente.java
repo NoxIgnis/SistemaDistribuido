@@ -25,19 +25,26 @@ import sistema.createJWT;
  */
 public class cadastroCliente extends javax.swing.JFrame {
 
-//    private Socket echoSocket;
-//    private PrintWriter out;
-//    private BufferedReader in;
     public Cliente cliente;
-    /**
-     * Creates new form cadastroCliente
-     */
-    public cadastroCliente() {
+    private String authToken;
+    public String ip;
+    public int porta;
+    
+    public cadastroCliente(String ip,int porta) {
         initComponents();
-        cliente = Cliente.getInstance("127.0.0.1", 10008);
-        //cliente.conectar();
+        cliente = Cliente.getInstance(ip, porta);
+        this.ip = ip;
+        this.porta = porta;
     }
-
+    
+    public cadastroCliente(String token,String ip,int porta) {
+        initComponents();
+        this.authToken = token;
+        cliente = Cliente.getInstance(ip, porta);
+        this.ip = ip;
+        this.porta = porta;
+        // Restante do código de inicialização da interface do usuário
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -163,7 +170,7 @@ public class cadastroCliente extends javax.swing.JFrame {
         if(isError){
             mostrarAviso(retorno.get("message").asText());
         }else{
-            login login = new login();
+            login login = new login(ip,porta);
             this.dispose();
             login.setVisible(true);
             login.mostrarAviso(retorno.get("message").asText());
@@ -171,7 +178,7 @@ public class cadastroCliente extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCadastrarActionPerformed
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
-        login login = new login();
+        login login = new login(ip,porta);
         this.dispose();
         login.setVisible(true);        // TODO add your handling code here:
     }//GEN-LAST:event_btnLoginActionPerformed
@@ -183,44 +190,44 @@ public class cadastroCliente extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(cadastroCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(cadastroCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(cadastroCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(cadastroCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        cadastroCliente cadastro = new cadastroCliente();
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                cadastro.setVisible(true);
-            }
-        });
-            cadastro.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                cadastro.cliente.fecharConexao();
-                cadastro.dispose(); 
-            }
-        });
-    }
+//    public static void main(String args[]) {
+//        /* Set the Nimbus look and feel */
+//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+//         */
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException ex) {
+//            java.util.logging.Logger.getLogger(cadastroCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (InstantiationException ex) {
+//            java.util.logging.Logger.getLogger(cadastroCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (IllegalAccessException ex) {
+//            java.util.logging.Logger.getLogger(cadastroCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(cadastroCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+//        //</editor-fold>
+//        cadastroCliente cadastro = new cadastroCliente();
+//        /* Create and display the form */
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                cadastro.setVisible(true);
+//            }
+//        });
+//            cadastro.addWindowListener(new WindowAdapter() {
+//            @Override
+//            public void windowClosing(WindowEvent e) {
+//                cadastro.cliente.fecharConexao();
+//                cadastro.dispose(); 
+//            }
+//        });
+//    }
     
     public String passwordMD5(String password) {
         return DigestUtils.md5Hex(password).toUpperCase();
@@ -242,7 +249,7 @@ public class cadastroCliente extends javax.swing.JFrame {
         jsonData.put("email",email);
         jsonData.put("password",password);
         ObjectNode jsonToSend = objectMapper.createObjectNode();
-        jsonToSend.put("action", "register");
+        jsonToSend.put("action", "autocadastro-usuario");
         jsonToSend.set("data", jsonData);
 
         
