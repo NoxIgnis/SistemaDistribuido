@@ -6,6 +6,8 @@ package views;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -21,37 +23,44 @@ import sistema.createJWT;
  *
  * @author henri
  */
-public class login extends javax.swing.JFrame {
-
+public class cadastroAdmin extends javax.swing.JFrame {
 
     public Cliente cliente;
+    private String authToken;
     public String ip;
     public int porta;
-
-
-    public login(String ip,int porta) {
+    
+    public cadastroAdmin(String ip,int porta) {
         initComponents();
-        cliente = Cliente.getInstance(ip, porta);  
+        cliente = Cliente.getInstance(ip, porta);
         this.ip = ip;
-        this.porta = porta;//cliente.conectar();
+        this.porta = porta;
     }
-
-   
+    
+    public cadastroAdmin(String token,String ip,int porta) {
+        initComponents();
+        this.authToken = token;
+        cliente = Cliente.getInstance(ip, porta);
+        this.ip = ip;
+        this.porta = porta;
+        // Restante do código de inicialização da interface do usuário
+    }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel4 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         txtEmail = new javax.swing.JTextField();
-        btnLogin = new javax.swing.JButton();
         btnCadastrar = new javax.swing.JButton();
+        btnVoltar = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        txtNome = new javax.swing.JTextField();
         txtPassword = new javax.swing.JPasswordField();
-
-        jLabel4.setText("jLabel4");
+        adminCheck = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -65,13 +74,6 @@ public class login extends javax.swing.JFrame {
             }
         });
 
-        btnLogin.setText("Entrar");
-        btnLogin.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnLoginActionPerformed(evt);
-            }
-        });
-
         btnCadastrar.setText("Cadastrar");
         btnCadastrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -79,13 +81,30 @@ public class login extends javax.swing.JFrame {
             }
         });
 
+        btnVoltar.setText("voltar");
+        btnVoltar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVoltarActionPerformed(evt);
+            }
+        });
+
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(51, 153, 255));
-        jLabel3.setText("LOGIN");
+        jLabel3.setText("Cadastro");
 
-        txtPassword.addActionListener(new java.awt.event.ActionListener() {
+        jLabel4.setText("Nome");
+
+        txtNome.setToolTipText("");
+        txtNome.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtPasswordActionPerformed(evt);
+                txtNomeActionPerformed(evt);
+            }
+        });
+
+        adminCheck.setText("Admin");
+        adminCheck.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                adminCheckActionPerformed(evt);
             }
         });
 
@@ -95,34 +114,47 @@ public class login extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(44, 44, 44)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel3)
-                    .addComponent(btnCadastrar, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnLogin)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtEmail, javax.swing.GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)
-                    .addComponent(txtPassword))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(btnCadastrar, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 73, Short.MAX_VALUE)
+                        .addComponent(btnVoltar, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(adminCheck, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtEmail, javax.swing.GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)
+                            .addComponent(txtNome)
+                            .addComponent(txtPassword))))
                 .addContainerGap(57, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(36, Short.MAX_VALUE)
+                .addContainerGap(8, Short.MAX_VALUE)
                 .addComponent(jLabel3)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(9, 9, 9)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(24, 24, 24)
-                .addComponent(btnLogin)
-                .addGap(16, 16, 16)
-                .addComponent(btnCadastrar)
-                .addGap(29, 29, 29))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(adminCheck)
+                .addGap(34, 34, 34)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnVoltar)
+                    .addComponent(btnCadastrar))
+                .addGap(19, 19, 19))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -143,36 +175,32 @@ public class login extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtEmailActionPerformed
 
-    private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
-        ObjectNode retorno = entrar();
-
+    private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
+        ObjectNode retorno = cadastrar();
         boolean isError = retorno.get("error").asBoolean();
         if(isError){
             mostrarAviso(retorno.get("message").asText());
         }else{
-                boolean admin = createJWT.isAdmin(retorno.get("data").get("token").asText());
-                if (admin){
-                    indexAdmin index = new indexAdmin(retorno.get("data").get("token").asText(),ip,porta);
-                    this.dispose();
-                    index.setVisible(true);
-                } else{
-                    indexCliente index = new indexCliente(retorno.get("data").get("token").asText(),ip,porta);
-                    this.dispose();
-                    index.setVisible(true);
-                }
-
+            indexAdmin admin = new indexAdmin(ip,porta);
+            this.dispose();
+            admin.setVisible(true);
+            admin.mostrarAviso(retorno.get("message").asText());
         }
-    }//GEN-LAST:event_btnLoginActionPerformed
-
-    private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
-        cadastroCliente cadastraCliente = new cadastroCliente(ip,porta);
-        this.dispose();
-        cadastraCliente.setVisible(true);
     }//GEN-LAST:event_btnCadastrarActionPerformed
 
-    private void txtPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPasswordActionPerformed
+    private void txtNomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNomeActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtPasswordActionPerformed
+    }//GEN-LAST:event_txtNomeActionPerformed
+
+    private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
+        indexAdmin admin = new indexAdmin(ip,porta);
+        this.dispose();
+        admin.setVisible(true);        // TODO add your handling code here:
+    }//GEN-LAST:event_btnVoltarActionPerformed
+
+    private void adminCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adminCheckActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_adminCheckActionPerformed
 
     /**
      * @param args the command line arguments
@@ -191,63 +219,82 @@ public class login extends javax.swing.JFrame {
 //                }
 //            }
 //        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//            java.util.logging.Logger.getLogger(cadastroAdmin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//            java.util.logging.Logger.getLogger(cadastroAdmin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//            java.util.logging.Logger.getLogger(cadastroAdmin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//            java.util.logging.Logger.getLogger(cadastroAdmin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //        }
 //        //</editor-fold>
-//               
+//        cadastroAdmin cadastro = new cadastroAdmin();
 //        /* Create and display the form */
 //        java.awt.EventQueue.invokeLater(new Runnable() {
 //            public void run() {
-//                new login().setVisible(true);
+//                cadastro.setVisible(true);
+//            }
+//        });
+//            cadastro.addWindowListener(new WindowAdapter() {
+//            @Override
+//            public void windowClosing(WindowEvent e) {
+//                cadastro.cliente.fecharConexao();
+//                cadastro.dispose(); 
 //            }
 //        });
 //    }
+    
     public String passwordMD5(String password) {
         return DigestUtils.md5Hex(password).toUpperCase();
     }
-    public ObjectNode entrar() {
 
-        ObjectNode respostaDoServidor ;
-//        
+    public ObjectNode cadastrar() {
+        ObjectNode respostaDoServidor;
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode jsonData = objectMapper.createObjectNode();
+
         // Agora, você pode enviar os dados para o servidor
+        String name = txtNome.getText();
         String email = txtEmail.getText();
         String password = new String(txtPassword.getPassword());
+        boolean type= adminCheck.isSelected();
         if (password != null && !password.isEmpty()){
             password = passwordMD5(password);
         }
-        ObjectMapper objectMapper = new ObjectMapper();
-        ObjectNode jsonData = objectMapper.createObjectNode();
-        jsonData.put("email", email);
+        jsonData.put("name", name);
+        jsonData.put("email",email);
         jsonData.put("password",password);
+        jsonData.put("type",type);
+        jsonData.put("token",authToken);
+
         ObjectNode jsonToSend = objectMapper.createObjectNode();
-        jsonToSend.put("action", "login");
+        jsonToSend.put("action", "cadastro-usuario");
         jsonToSend.set("data", jsonData);
+
         
+        // Envie os dados para o servidor (substitua 'DadosParaServidor' pelos dados reais)
         respostaDoServidor = cliente.enviarSolicitacao(jsonToSend);
-        System.out.println(respostaDoServidor);
+       
         // Feche os fluxos e a conexão com o servidor
         return respostaDoServidor;
     }
     
+        
      public void mostrarAviso(String mensagem) {
         JOptionPane.showMessageDialog(this, mensagem, "Aviso", JOptionPane.INFORMATION_MESSAGE);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox adminCheck;
     private javax.swing.JButton btnCadastrar;
-    private javax.swing.JButton btnLogin;
+    private javax.swing.JButton btnVoltar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JTextField txtEmail;
+    private javax.swing.JTextField txtNome;
     private javax.swing.JPasswordField txtPassword;
     // End of variables declaration//GEN-END:variables
 }
