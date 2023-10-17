@@ -34,11 +34,13 @@ public class Servidor extends Thread
  private static List<Socket> clientesConectados = new ArrayList<>();
  BufferedReader in;
  PrintWriter out;
+ int setPorta;
 
-    public Servidor() {
+    public Servidor(int porta) {
          // Inicializa o objeto servidorView
+         this.setPorta = porta;
     }
- public void iniciarServidor(int setPorta) throws IOException 
+ public void iniciarServidor() throws IOException 
    { 
     ServerSocket serverSocket = null; 
 

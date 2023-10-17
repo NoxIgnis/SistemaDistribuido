@@ -94,9 +94,9 @@ public class server extends javax.swing.JFrame {
 
         if (porta != 0) {
             if (servidor == null) {
-            servidor = new Servidor();
+            servidor = new Servidor(porta);
             try {
-                servidor.iniciarServidor(porta);
+                servidor.iniciarServidor();
             } catch (IOException ex) {
             }
         } else {
