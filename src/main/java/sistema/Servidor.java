@@ -51,13 +51,11 @@ public class Servidor extends Thread
               while (serverContinue)
                  {
                   serverSocket.setSoTimeout(10000);
-                  System.out.println ("Waiting for Connection");
                   try {
                        new Servidor (serverSocket.accept()); 
                       }
                   catch (SocketTimeoutException ste)
                       {
-                       System.out.println ("Timeout Occurred");
                       }
                  }
              } 
@@ -123,10 +121,10 @@ public class Servidor extends Thread
         } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
         }
-         
          while ((inputLine = in.readLine())!=null) 
-            { 
-
+            {   
+                System.out.println("Recebido do Cliente ->"+inputLine);
+         
                 ObjectMapper objectMapper = new ObjectMapper();
                 ObjectNode receivedJson = objectMapper.readValue(inputLine, ObjectNode.class);
                 String action = receivedJson.get("action").asText();
@@ -158,24 +156,21 @@ public class Servidor extends Thread
                                 responseJson.put("action", "cadastro-usuario");
                                 responseJson.put("error", false);
                                 responseJson.put("message", "Usuário cadastrado com sucesso!");
-                                ObjectNode dataResponse = objectMapper.createObjectNode();
-                                responseJson.set("data", dataResponse);
+
 
                        }else{
                                 responseJson = objectMapper.createObjectNode();
                                 responseJson.put("action", "cadastro-usuario");
                                 responseJson.put("error",true);
                                 responseJson.put("message", "erro ao cadastrar");
-                                ObjectNode dataResponse = objectMapper.createObjectNode();
-                                responseJson.set("data", dataResponse);
+
                        }
                     } else {
                         responseJson = objectMapper.createObjectNode();
                         responseJson.put("action", "cadastro-usuario");
                         responseJson.put("error",true);
                         responseJson.put("message", "todos os dados devem ser preenchidos");
-                        ObjectNode dataResponse = objectMapper.createObjectNode();
-                        responseJson.set("data", dataResponse);
+                        
                     }
                 } catch (SQLException ex) {
                     Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
@@ -200,29 +195,23 @@ public class Servidor extends Thread
                                 responseJson.put("action", "autocadastro-usuario");
                                 responseJson.put("error", false);
                                 responseJson.put("message", "Usuário cadastrado com sucesso!");
-                                ObjectNode dataResponse = objectMapper.createObjectNode();
-                                responseJson.set("data", dataResponse);
                        }else{
                                 responseJson = objectMapper.createObjectNode();
                                 responseJson.put("action", "autocadastro-usuario");
                                 responseJson.put("error",true);
                                 responseJson.put("message", "erro ao cadastrar");
-                                ObjectNode dataResponse = objectMapper.createObjectNode();
-                                responseJson.set("data", dataResponse);
                        }
                     } else {
                         responseJson = objectMapper.createObjectNode();
                         responseJson.put("action", "autocadastro-usuario");
                         responseJson.put("error",true);
                         responseJson.put("message", "todos os dados devem ser preenchidos");
-                        ObjectNode dataResponse = objectMapper.createObjectNode();
-                        responseJson.set("data", dataResponse);
                     }
                 } catch (SQLException ex) {
                     Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
                 }
              } else if(action.equals("login")){
-                 
+
                 String email = dataNode.get("email").asText();
                 String password = dataNode.get("password").asText();
                 String token;
@@ -258,9 +247,6 @@ public class Servidor extends Thread
                             responseJson.put("action", "login");
                             responseJson.put("error", true);
                             responseJson.put("message", "Usuario não encontrado");
-                            ObjectNode dataResponse = objectMapper.createObjectNode();
-                            dataResponse.put("token", "dka3i92fjsi4j9f29jf92j");
-                            responseJson.set("data", dataResponse);
 
                         }
                     } catch (SQLException e) {
@@ -275,6 +261,7 @@ public class Servidor extends Thread
              }
                 
                 String jsonString=objectMapper.writeValueAsString(responseJson);
+                System.out.println("Resposta para Cliente ->"+jsonString);
                 out.println(jsonString);
 
               if (inputLine.equals("logout")) 
@@ -284,11 +271,9 @@ public class Servidor extends Thread
         Date dataAtual = new Date();
 
         SimpleDateFormat formato = new SimpleDateFormat("HH:mm:ss");
-
         String horaFormatada = formato.format(dataAtual);
-
         System.out.println("Hora atual: " + horaFormatada);
-         System.out.println("Cliente conectado saiu");
+        System.out.println("Cliente conectado saiu");
          out.close(); 
          in.close(); 
          if (conexao != null){

@@ -37,8 +37,10 @@ public class Cliente {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             String jsonString=objectMapper.writeValueAsString(solicitacao);
+            System.out.println("Para o Servidor ->"+jsonString);
             out.println(jsonString);        
            ObjectNode jsonResponse = objectMapper.readValue(in.readLine(), ObjectNode.class);
+            System.out.println("Resposta do Servidor ->"+jsonResponse);
             return jsonResponse;
         } catch (IOException e) {
             e.printStackTrace();   

@@ -28,7 +28,7 @@ public class createJWT {
           System.out.println(isAdmin);
            return Jwts.builder()
                    .claim("user_id", subject)
-                   .claim("isAdmin", isAdmin)
+                   .claim("admin", isAdmin)
                    .setSubject(subject)
                    .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                    .compact();
@@ -40,7 +40,7 @@ public class createJWT {
 
     public static boolean isAdmin(String token) {
         Jws<Claims> parsedToken = parseToken(token);
-        return (boolean) parsedToken.getBody().get("isAdmin", Boolean.class);
+        return (boolean) parsedToken.getBody().get("admin", Boolean.class);
     }
 
 
