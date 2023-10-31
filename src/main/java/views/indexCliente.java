@@ -6,8 +6,11 @@ package views;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.jsonwebtoken.Claims;
 import javax.swing.JOptionPane;
+import org.apache.commons.codec.digest.DigestUtils;
 import sistema.Cliente;
+import sistema.createJWT;
 
 /**
  *
@@ -18,22 +21,23 @@ public class indexCliente extends javax.swing.JFrame {
     private String authToken;
     public String ip;
     public int porta;
+    private String senha;
+    private String email;
     /**
      * Creates new form indexCliente
      * @param token
      * @param ip
      * @param porta
      */
-//    public indexCliente() {
-//        initComponents();
-//        cliente = Cliente.getInstance("127.0.0.1", 10008);
-//    }
-    public indexCliente(String token,String ip,int porta) {
+
+    public indexCliente(String token,String ip,int porta,String email,String senha) {
         initComponents();
         this.authToken = token;
         cliente = Cliente.getInstance(ip, porta);
         this.ip = ip;
         this.porta = porta;
+        this.email = email;
+        this.senha= senha;
     }
 
     /**
@@ -47,17 +51,39 @@ public class indexCliente extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         btnLogout = new javax.swing.JButton();
+        btnEditar = new javax.swing.JButton();
+        btnDeletar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(0, 51, 153));
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(0, 102, 255));
         jLabel1.setText("Bem Vindo");
 
+        btnLogout.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btnLogout.setForeground(new java.awt.Color(255, 0, 51));
         btnLogout.setText("Logout");
         btnLogout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnLogoutActionPerformed(evt);
+            }
+        });
+
+        btnEditar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnEditar.setForeground(new java.awt.Color(255, 0, 51));
+        btnEditar.setText("Editar");
+        btnEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarActionPerformed(evt);
+            }
+        });
+
+        btnDeletar.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btnDeletar.setForeground(new java.awt.Color(255, 0, 51));
+        btnDeletar.setText("Deletar Conta");
+        btnDeletar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeletarActionPerformed(evt);
             }
         });
 
@@ -66,23 +92,26 @@ public class indexCliente extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(143, 143, 143)
-                        .addComponent(jLabel1))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(155, 155, 155)
-                        .addComponent(btnLogout)))
-                .addContainerGap(163, Short.MAX_VALUE))
+                .addGap(116, 116, 116)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnEditar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnDeletar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnLogout, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(98, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(77, 77, 77)
                 .addComponent(jLabel1)
-                .addGap(71, 71, 71)
+                .addGap(18, 18, 18)
+                .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnDeletar)
+                .addGap(18, 18, 18)
                 .addComponent(btnLogout)
-                .addContainerGap(104, Short.MAX_VALUE))
+                .addContainerGap(40, Short.MAX_VALUE))
         );
 
         pack();
@@ -102,40 +131,29 @@ public class indexCliente extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnLogoutActionPerformed
 
-    /**
-     * @param args the command line arguments
-//     */
-//    public static void main(String args[]) {
-//        /* Set the Nimbus look and feel */
-//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-//         */
-//        try {
-//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-//        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(indexCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(indexCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(indexCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(indexCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        }
-//        //</editor-fold>
-//
-//        /* Create and display the form */
-//        java.awt.EventQueue.invokeLater(new Runnable() {
-//            public void run() {
-//                new indexCliente().setVisible(true);
-//            }
-//        });
-//    }
+    private void btnDeletarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeletarActionPerformed
+        ObjectNode retorno =  deletar();
+       boolean isError = retorno.get("error").asBoolean();
+        if(isError){
+            mostrarAviso(retorno.get("message").asText());
+        }else{
+            login login = new login(ip,porta);
+            this.dispose();
+            login.setVisible(true);
+            login.mostrarAviso(retorno.get("message").asText());
+        }    }//GEN-LAST:event_btnDeletarActionPerformed
+
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        // TODO add your editarAdmin editar = new editarAdmin(authToken,ip,porta);
+        editarCliente editar = new editarCliente(authToken,ip,porta,email,senha);
+        this.dispose();
+        editar.setVisible(true); 
+    }//GEN-LAST:event_btnEditarActionPerformed
+
+      public String passwordMD5(String password) {
+        return DigestUtils.md5Hex(password).toUpperCase();
+    }
+      
 private ObjectNode logout() {
         ObjectNode respostaDoServidor;
         ObjectMapper objectMapper = new ObjectMapper();
@@ -153,10 +171,33 @@ private ObjectNode logout() {
         return respostaDoServidor;
 }
 
+ public ObjectNode deletar(){
+
+        if (senha != null && !senha.isEmpty()){
+            senha = passwordMD5(senha);
+        }
+        ObjectNode respostaDoServidor;
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode jsonToSend = objectMapper.createObjectNode();
+        jsonToSend.put("action", "excluir-proprio-usuario");
+
+        ObjectNode data = objectMapper.createObjectNode();
+        data.put("token", authToken);
+        data.put("email", email);
+        data.put("password", senha);
+
+        jsonToSend.set("data", data);
+        
+        respostaDoServidor = cliente.enviarSolicitacao(jsonToSend);
+        return respostaDoServidor;
+    }
+
 public void mostrarAviso(String mensagem) {
         JOptionPane.showMessageDialog(this, mensagem, "Aviso", JOptionPane.INFORMATION_MESSAGE);
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnDeletar;
+    private javax.swing.JButton btnEditar;
     private javax.swing.JButton btnLogout;
     private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables

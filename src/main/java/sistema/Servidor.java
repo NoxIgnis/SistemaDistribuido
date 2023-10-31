@@ -136,7 +136,6 @@ public class Servidor extends Thread
                 try {
                     String token = dataNode.get("token").asText();
                     Claims claims = createJWT.verifyJwtToken(token);
-                    System.out.println(claims);
 
                     String consultaInsercao;
                     String email = dataNode.get("email").asText();
@@ -329,7 +328,7 @@ public class Servidor extends Thread
                            
                         } else {
                             responseJson = objectMapper.createObjectNode();
-                            responseJson.put("action", "login");
+                            responseJson.put("action", "pedido-edicao-usuario");
                             responseJson.put("error", true);
                             responseJson.put("message", "Usuario não encontrado");
 
@@ -404,6 +403,111 @@ public class Servidor extends Thread
                     responseJson.put("error", true);
                     responseJson.put("message", "id deve ser preenchido para a EXCLUSÃO.");
                 }
+             }else if (action.equals("excluir-proprio-usuario")){
+                 String consultaDelete;
+                String email = dataNode.get("email").asText();
+                String password = dataNode.get("password").asText();
+                if (email != null && !email.isEmpty() && password != null && !password.isEmpty() ) {
+                    consultaDelete = "DELETE FROM `usuarios` WHERE `email` = ? AND `senha` = ?";
+
+                    PreparedStatement preparedStatement;
+                    preparedStatement = conexao.prepareStatement(consultaDelete);
+
+                    preparedStatement.setString(1, email);
+                    preparedStatement.setString(2, password);
+
+                    int linhasAfetadas = preparedStatement.executeUpdate();
+                    if (linhasAfetadas == 1) {
+                        responseJson = objectMapper.createObjectNode();
+                        responseJson.put("action", "excluir-proprio-usuario");
+                        responseJson.put("error", false);
+                        responseJson.put("message", "Usuário Excluido com sucesso!");
+                    } else {
+                        responseJson = objectMapper.createObjectNode();
+                        responseJson.put("action", "excluir-proprio-usuario");
+                        responseJson.put("error", true);
+                        responseJson.put("message", "Erro ao Excluir o usuário.");
+                    }
+                } else {
+                    responseJson = objectMapper.createObjectNode();
+                    responseJson.put("action", "excluir-proprio-usuario");
+                    responseJson.put("error", true);
+                    responseJson.put("message", "Erro ao realizar EXCLUSÃO.");
+                }
+             }else if(action.equals("pedido-proprio-usuario")){
+                 
+                String token = dataNode.get("token").asText();
+                if(token != null && !token.isEmpty()){
+                    Claims claims = createJWT.verifyJwtToken(token);
+                    try {
+                        String consultaSelecao = "SELECT * FROM usuarios WHERE id = ?";
+                        PreparedStatement preparedStatement;
+                        preparedStatement = conexao.prepareStatement(consultaSelecao);
+
+                        preparedStatement.setString(1, claims.get("user_id", String.class));
+                        ResultSet resultSet = preparedStatement.executeQuery();
+
+                        if (resultSet.next()) {
+                            // O usuário foi encontrado
+                            responseJson = objectMapper.createObjectNode();
+                            responseJson.put("action", "pedido-proprio-usuario");
+                            responseJson.put("error", false);
+                            responseJson.put("message", "Sucesso");
+                            ObjectNode dataResponse = objectMapper.createObjectNode();
+                            ObjectNode userNode = objectMapper.createObjectNode();
+                            userNode.put("id", resultSet.getInt("id"));
+                            userNode.put("name", resultSet.getString("nome"));
+                            userNode.put("type", resultSet.getBoolean("isAdmin"));
+                            userNode.put("email", resultSet.getString("email"));
+                            dataResponse.set("user", userNode); // Definir o nó "user" em "data"
+                            responseJson.set("data", dataResponse);
+                           
+                        } else {
+                            responseJson = objectMapper.createObjectNode();
+                            responseJson.put("action", "pedido-proprio-usuario");
+                            responseJson.put("error", true);
+                            responseJson.put("message", "Usuario não encontrado");
+
+                        }
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }       
+                }
+             }else if (action.equals("autoedicao-usuario")){
+                String consultaAtualizacao;
+                String email = dataNode.get("email").asText();
+                String user_id = dataNode.get("id").asText();
+                String name = dataNode.get("name").asText();
+
+                if (email != null && !email.isEmpty() && name != null && !name.isEmpty()) {
+                    consultaAtualizacao = "UPDATE `usuarios` SET `nome` = ?, `email` = ? WHERE `id` = ?";
+
+                    PreparedStatement preparedStatement;
+                    preparedStatement = conexao.prepareStatement(consultaAtualizacao);
+
+                    preparedStatement.setString(1, name);
+                    preparedStatement.setString(2, email);
+                    preparedStatement.setString(3, user_id);
+
+                    int linhasAfetadas = preparedStatement.executeUpdate();
+                    if (linhasAfetadas == 1) {
+                        responseJson = objectMapper.createObjectNode();
+                        responseJson.put("action", "autoedicao-usuario");
+                        responseJson.put("error", false);
+                        responseJson.put("message", "Usuário atualizado com sucesso!");
+                    } else {
+                        responseJson = objectMapper.createObjectNode();
+                        responseJson.put("action", "autoedicao-usuario");
+                        responseJson.put("error", true);
+                        responseJson.put("message", "Erro ao atualizar o usuário. Verifique os dados fornecidos.");
+                    }
+                } else {
+                    responseJson = objectMapper.createObjectNode();
+                    responseJson.put("action", "autoedicao-usuario");
+                    responseJson.put("error", true);
+                    responseJson.put("message", "Todos os campos devem ser preenchidos para a atualização.");
+                }
+
              }
                 
                 String jsonString=objectMapper.writeValueAsString(responseJson);
