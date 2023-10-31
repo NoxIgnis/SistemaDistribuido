@@ -183,7 +183,7 @@ public class editarAdmin extends javax.swing.JFrame {
         if(isError){
             mostrarAviso(retorno.get("message").asText());
         }else{
-            indexAdmin admin = new indexAdmin(ip,porta);
+            indexAdmin admin = new indexAdmin(authToken,ip,porta);
             this.dispose();
             admin.setVisible(true);
             admin.mostrarAviso(retorno.get("message").asText());
@@ -294,7 +294,6 @@ public void getDados(){
         ObjectNode jsonData = objectMapper.createObjectNode();
         jsonData.put("token", authToken);
         Claims claims = createJWT.verifyJwtToken(authToken);
-        System.out.println(claims);
         jsonData.put("user_id", claims.get("user_id", String.class));
         ObjectNode jsonToSend = objectMapper.createObjectNode();
         jsonToSend.put("action", "pedido-edicao-usuario");
