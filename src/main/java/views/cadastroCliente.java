@@ -238,7 +238,6 @@ public class cadastroCliente extends javax.swing.JFrame {
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode jsonData = objectMapper.createObjectNode();
 
-        // Agora, você pode enviar os dados para o servidor
         String name = txtNome.getText();
         String email = txtEmail.getText();
         String password = new String(txtPassword.getPassword());

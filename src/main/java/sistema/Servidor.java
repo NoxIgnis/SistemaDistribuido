@@ -11,6 +11,7 @@ package sistema;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.jsonwebtoken.Claims;
 
 import java.net.*; 
@@ -130,7 +131,6 @@ public class Servidor extends Thread
                 String action = receivedJson.get("action").asText();
                 JsonNode dataNode = receivedJson.get("data");
                 ObjectNode responseJson = objectMapper.createObjectNode();
-
 
              if(action.equals("cadastro-usuario")){
                 try {
@@ -258,6 +258,152 @@ public class Servidor extends Thread
                 responseJson.put("action", "logout");
                 responseJson.put("error", false);
                 responseJson.put("message", "logout efetuado com sucesso");
+                
+             }else if(action.equals("listar-usuarios")){
+                 
+                    String consultaSelecao = "SELECT DISTINCT * FROM usuarios";
+                    PreparedStatement preparedStatement;
+                    preparedStatement = conexao.prepareStatement(consultaSelecao);
+                    ResultSet resultSet = preparedStatement.executeQuery();
+
+                    if (resultSet.next()) {
+                        responseJson.put("action", "listar-usuarios");
+                        responseJson.put("error", false);
+                        responseJson.put("message", "Sucesso");
+
+                        ArrayNode usersArray = objectMapper.createArrayNode();
+
+                        do {
+                            ObjectNode userNode = objectMapper.createObjectNode();
+                            userNode.put("id", resultSet.getInt("id"));
+                            userNode.put("name", resultSet.getString("nome"));
+                            userNode.put("type", resultSet.getBoolean("isAdmin"));
+                            userNode.put("email", resultSet.getString("email"));
+                            usersArray.add(userNode);
+                        } while (resultSet.next());
+
+                        ObjectNode dataResponse = objectMapper.createObjectNode();
+                        dataResponse.set("users", usersArray);
+
+                        responseJson.set("data", dataResponse);
+                    } else {
+                        responseJson.put("action", "listar-usuarios");
+                        responseJson.put("error", true);
+                        responseJson.put("message", "Nenhum usuário encontrado");
+                    }
+                    // Agora responseJson contém o JSON no formato desejado com os dados dos usuários.
+             }else if(action.equals("pedido-edicao-usuario")){
+             
+                String id = dataNode.get("user_id").asText();
+                String token = dataNode.get("token").asText();
+
+                if(id != null && !id.isEmpty()){
+                    try {
+                        String consultaSelecao = "SELECT * FROM usuarios WHERE id = ?";
+                        PreparedStatement preparedStatement;
+                        preparedStatement = conexao.prepareStatement(consultaSelecao);
+
+                        preparedStatement.setString(1, id);
+                        ResultSet resultSet = preparedStatement.executeQuery();
+
+                        if (resultSet.next()) {
+                            // O usuário foi encontrado
+                            responseJson = objectMapper.createObjectNode();
+                            responseJson.put("action", "pedido-edicao-usuario");
+                            responseJson.put("error", false);
+                            responseJson.put("message", "Sucesso");
+                            ObjectNode dataResponse = objectMapper.createObjectNode();
+                            ObjectNode userNode = objectMapper.createObjectNode();
+                            userNode.put("id", resultSet.getInt("id"));
+                            userNode.put("name", resultSet.getString("nome"));
+                            userNode.put("type", resultSet.getBoolean("isAdmin"));
+                            userNode.put("email", resultSet.getString("email"));
+                            dataResponse.set("user", userNode); // Definir o nó "user" em "data"
+                            
+//                            String userId = resultSet.getString("id");
+//                            boolean userAdmin = resultSet.getBoolean("isAdmin");
+
+//                            dataResponse.put("token", token);
+                           
+                            responseJson.set("data", dataResponse);
+                           
+                        } else {
+                            responseJson = objectMapper.createObjectNode();
+                            responseJson.put("action", "login");
+                            responseJson.put("error", true);
+                            responseJson.put("message", "Usuario não encontrado");
+
+                        }
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+             }else if (action.equals("edicao-usuario")){
+                String consultaAtualizacao;
+                String email = dataNode.get("email").asText();
+                boolean isAdmin = dataNode.get("type").asBoolean();
+                String user_id = dataNode.get("user_id").asText();
+                String name = dataNode.get("name").asText();
+
+                if (user_id != null && !user_id.isEmpty() && email != null && !email.isEmpty() && name != null && !name.isEmpty()) {
+                    consultaAtualizacao = "UPDATE `usuarios` SET `nome` = ?, `email` = ?, isAdmin = ? WHERE `id` = ?";
+
+                    PreparedStatement preparedStatement;
+                    preparedStatement = conexao.prepareStatement(consultaAtualizacao);
+
+                    preparedStatement.setString(1, name);
+                    preparedStatement.setString(2, email);
+                    preparedStatement.setBoolean(3, isAdmin);
+                    preparedStatement.setString(4, user_id);
+
+                    int linhasAfetadas = preparedStatement.executeUpdate();
+                    if (linhasAfetadas == 1) {
+                        responseJson = objectMapper.createObjectNode();
+                        responseJson.put("action", "edicao-usuario");
+                        responseJson.put("error", false);
+                        responseJson.put("message", "Usuário atualizado com sucesso!");
+                    } else {
+                        responseJson = objectMapper.createObjectNode();
+                        responseJson.put("action", "edicao-usuario");
+                        responseJson.put("error", true);
+                        responseJson.put("message", "Erro ao atualizar o usuário. Verifique os dados fornecidos.");
+                    }
+                } else {
+                    responseJson = objectMapper.createObjectNode();
+                    responseJson.put("action", "edicao-usuario");
+                    responseJson.put("error", true);
+                    responseJson.put("message", "Todos os campos devem ser preenchidos para a atualização.");
+                }
+
+             }else if (action.equals("excluir-usuario")){
+                 String consultaDelete;
+                String user_id = dataNode.get("user_id").asText();
+                if (user_id != null && !user_id.isEmpty()) {
+                    consultaDelete = "DELETE FROM `usuarios` WHERE `id` = ?";
+
+                    PreparedStatement preparedStatement;
+                    preparedStatement = conexao.prepareStatement(consultaDelete);
+
+                    preparedStatement.setString(1, user_id);
+
+                    int linhasAfetadas = preparedStatement.executeUpdate();
+                    if (linhasAfetadas == 1) {
+                        responseJson = objectMapper.createObjectNode();
+                        responseJson.put("action", "excluir-usuario");
+                        responseJson.put("error", false);
+                        responseJson.put("message", "Usuário Excluido com sucesso!");
+                    } else {
+                        responseJson = objectMapper.createObjectNode();
+                        responseJson.put("action", "excluir-usuario");
+                        responseJson.put("error", true);
+                        responseJson.put("message", "Erro ao Excluir o usuário.");
+                    }
+                } else {
+                    responseJson = objectMapper.createObjectNode();
+                    responseJson.put("action", "excluir-usuario");
+                    responseJson.put("error", true);
+                    responseJson.put("message", "id deve ser preenchido para a EXCLUSÃO.");
+                }
              }
                 
                 String jsonString=objectMapper.writeValueAsString(responseJson);
@@ -289,7 +435,9 @@ public class Servidor extends Thread
         { 
          System.err.println("Problem with Communication Server");
          System.exit(1); 
-        } 
+        } catch (SQLException ex) { 
+         Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
+     } 
     }
  public static List<Socket> getClientesConectados() {
     return clientesConectados;
