@@ -141,7 +141,8 @@ public class Servidor extends Thread
                     String email = dataNode.get("email").asText();
                     String password = dataNode.get("password").asText();
                     String name = dataNode.get("name").asText();
-                    int type = dataNode.get("type").asInt();
+//                    int type = dataNode.get("type").asInt();
+                    int type = dataNode.get("type").asText() == "admin" ? 1: 0;
 
                     if (password != null && !password.isEmpty() && email != null && !email.isEmpty() && name != null && !name.isEmpty()) {
                         consultaInsercao = "INSERT INTO `usuarios`(`nome`, `senha`, `email`,`isAdmin`) VALUES ('"+ name +"','"+password+"','"+email+"','"+type+"')";
@@ -276,7 +277,8 @@ public class Servidor extends Thread
                             ObjectNode userNode = objectMapper.createObjectNode();
                             userNode.put("id", resultSet.getInt("id"));
                             userNode.put("name", resultSet.getString("nome"));
-                            userNode.put("type", resultSet.getBoolean("isAdmin"));
+                            String type = resultSet.getBoolean("isAdmin") ? "admin": "user";
+                            userNode.put("type", type);
                             userNode.put("email", resultSet.getString("email"));
                             usersArray.add(userNode);
                         } while (resultSet.next());
@@ -315,7 +317,8 @@ public class Servidor extends Thread
                             ObjectNode userNode = objectMapper.createObjectNode();
                             userNode.put("id", resultSet.getInt("id"));
                             userNode.put("name", resultSet.getString("nome"));
-                            userNode.put("type", resultSet.getBoolean("isAdmin"));
+                            String type = resultSet.getBoolean("isAdmin") ? "admin": "user";
+                            userNode.put("type", type);
                             userNode.put("email", resultSet.getString("email"));
                             dataResponse.set("user", userNode); // Definir o nó "user" em "data"
                             
@@ -338,14 +341,16 @@ public class Servidor extends Thread
                     }
                 }
              }else if (action.equals("edicao-usuario")){
-                String consultaAtualizacao;
+                String consultaAtualizacao;           
                 String email = dataNode.get("email").asText();
-                boolean isAdmin = dataNode.get("type").asBoolean();
+//                boolean isAdmin = dataNode.get("type").asBoolean();
+                boolean isAdmin = dataNode.get("type").asText() == "admin" ? true: false;
                 String user_id = dataNode.get("user_id").asText();
+                String password = dataNode.get("password").asText();
                 String name = dataNode.get("name").asText();
 
                 if (user_id != null && !user_id.isEmpty() && email != null && !email.isEmpty() && name != null && !name.isEmpty()) {
-                    consultaAtualizacao = "UPDATE `usuarios` SET `nome` = ?, `email` = ?, isAdmin = ? WHERE `id` = ?";
+                    consultaAtualizacao = "UPDATE `usuarios` SET `nome` = ?, `email` = ?, isAdmin = ? ,senha = ? WHERE `id` = ?";
 
                     PreparedStatement preparedStatement;
                     preparedStatement = conexao.prepareStatement(consultaAtualizacao);
@@ -353,7 +358,8 @@ public class Servidor extends Thread
                     preparedStatement.setString(1, name);
                     preparedStatement.setString(2, email);
                     preparedStatement.setBoolean(3, isAdmin);
-                    preparedStatement.setString(4, user_id);
+                    preparedStatement.setString(4, password);
+                    preparedStatement.setString(5, user_id);
 
                     int linhasAfetadas = preparedStatement.executeUpdate();
                     if (linhasAfetadas == 1) {
@@ -457,7 +463,9 @@ public class Servidor extends Thread
                             ObjectNode userNode = objectMapper.createObjectNode();
                             userNode.put("id", resultSet.getInt("id"));
                             userNode.put("name", resultSet.getString("nome"));
-                            userNode.put("type", resultSet.getBoolean("isAdmin"));
+//                            userNode.put("type", resultSet.getBoolean("isAdmin"));
+                            String isAdmin = resultSet.getBoolean("isAdmin") ? "admin": "user";
+                            userNode.put("type", isAdmin);
                             userNode.put("email", resultSet.getString("email"));
                             dataResponse.set("user", userNode); // Definir o nó "user" em "data"
                             responseJson.set("data", dataResponse);
@@ -478,16 +486,19 @@ public class Servidor extends Thread
                 String email = dataNode.get("email").asText();
                 String user_id = dataNode.get("id").asText();
                 String name = dataNode.get("name").asText();
+                String password = dataNode.get("password").asText();
 
                 if (email != null && !email.isEmpty() && name != null && !name.isEmpty()) {
-                    consultaAtualizacao = "UPDATE `usuarios` SET `nome` = ?, `email` = ? WHERE `id` = ?";
+                    consultaAtualizacao = "UPDATE `usuarios` SET `nome` = ?, `email` = ? , senha = ? WHERE `id` = ?";
 
                     PreparedStatement preparedStatement;
                     preparedStatement = conexao.prepareStatement(consultaAtualizacao);
 
                     preparedStatement.setString(1, name);
                     preparedStatement.setString(2, email);
-                    preparedStatement.setString(3, user_id);
+                    preparedStatement.setString(3, password);
+
+                    preparedStatement.setString(4, user_id);
 
                     int linhasAfetadas = preparedStatement.executeUpdate();
                     if (linhasAfetadas == 1) {

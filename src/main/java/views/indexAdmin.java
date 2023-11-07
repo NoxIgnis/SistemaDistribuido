@@ -25,14 +25,6 @@ public class indexAdmin extends javax.swing.JFrame {
     private String authToken;
     public String ip;
     public int porta;
-
-    public indexAdmin(String ip,int porta) {
-        initComponents();
-        cliente = Cliente.getInstance(ip, porta);
-        this.ip = ip;
-        this.porta = porta;
-
-    }
     
     public indexAdmin(String token,String ip,int porta) {
         initComponents();

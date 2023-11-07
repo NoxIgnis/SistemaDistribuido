@@ -181,7 +181,7 @@ public class cadastroAdmin extends javax.swing.JFrame {
         if(isError){
             mostrarAviso(retorno.get("message").asText());
         }else{
-            indexAdmin admin = new indexAdmin(ip,porta);
+            indexAdmin admin = new indexAdmin(authToken,ip,porta);
             this.dispose();
             admin.setVisible(true);
             admin.mostrarAviso(retorno.get("message").asText());
@@ -193,7 +193,7 @@ public class cadastroAdmin extends javax.swing.JFrame {
     }//GEN-LAST:event_txtNomeActionPerformed
 
     private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
-        indexAdmin admin = new indexAdmin(ip,porta);
+        indexAdmin admin = new indexAdmin(authToken,ip,porta);
         this.dispose();
         admin.setVisible(true);        // TODO add your handling code here:
     }//GEN-LAST:event_btnVoltarActionPerformed
@@ -258,13 +258,14 @@ public class cadastroAdmin extends javax.swing.JFrame {
         String email = txtEmail.getText();
         String password = new String(txtPassword.getPassword());
         boolean type= adminCheck.isSelected();
+        String tipo = type ? "admin": "user";
         if (password != null && !password.isEmpty()){
             password = passwordMD5(password);
         }
         jsonData.put("name", name);
         jsonData.put("email",email);
         jsonData.put("password",password);
-        jsonData.put("type",type);
+        jsonData.put("type",tipo);
         jsonData.put("token",authToken);
 
         ObjectNode jsonToSend = objectMapper.createObjectNode();

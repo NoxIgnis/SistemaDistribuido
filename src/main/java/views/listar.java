@@ -244,7 +244,8 @@ public void usuariosListar(String token) {
             for (JsonNode user : users) {
                 int id = user.get("id").asInt();
                 String name = user.get("name").asText();
-                boolean type = user.get("type").asBoolean();
+                int type = user.get("type").asText() == "admin" ? 1: 0;
+//                boolean type = user.get("type").asBoolean();
                 String email = user.get("email").asText();
 
                 Object[] rowData = { id, name, type, email };

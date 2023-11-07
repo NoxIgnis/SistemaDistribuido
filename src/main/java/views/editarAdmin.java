@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.jsonwebtoken.Claims;
 import javax.swing.JOptionPane;
+import org.apache.commons.codec.digest.DigestUtils;
 import sistema.Cliente;
 import sistema.createJWT;
 
@@ -23,17 +24,20 @@ public class editarAdmin extends javax.swing.JFrame {
     public String ip;
     public int porta;
     public String id = "";
+    
     public editarAdmin(String token,String ip,int porta) {
         initComponents();
         this.authToken = token;
         this.cliente = Cliente.getInstance(ip, porta);
+        Claims claims = createJWT.verifyJwtToken(authToken);
+        System.out.println(claims);
+        this.id=claims.get("user_id", String.class);
         getDados();
     }
 
     public editarAdmin(String token,String ip,int porta,String id) {
         initComponents();
         this.authToken = token;
-
         this.cliente = Cliente.getInstance(ip, porta);
         this.ip = ip;
         this.id = id;
@@ -60,6 +64,8 @@ public class editarAdmin extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         txtNome = new javax.swing.JTextField();
         adminCheck = new javax.swing.JCheckBox();
+        txtPassword = new javax.swing.JPasswordField();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -105,31 +111,34 @@ public class editarAdmin extends javax.swing.JFrame {
             }
         });
 
+        jLabel2.setText("Senha");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(44, 44, 44)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(btnEnviar, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 73, Short.MAX_VALUE)
-                        .addComponent(btnVoltar, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(adminCheck, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtEmail, javax.swing.GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)
-                            .addComponent(txtNome))))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(adminCheck, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addComponent(btnEnviar, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 73, Short.MAX_VALUE)
+                            .addComponent(btnVoltar, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtEmail, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)
+                        .addComponent(txtNome, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(txtPassword, javax.swing.GroupLayout.Alignment.LEADING)))
                 .addContainerGap(57, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(8, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel4)
@@ -139,13 +148,17 @@ public class editarAdmin extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(adminCheck)
-                .addGap(84, 84, 84)
+                .addGap(22, 22, 22)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnVoltar)
                     .addComponent(btnEnviar))
-                .addGap(19, 19, 19))
+                .addGap(37, 37, 37))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -238,42 +251,45 @@ public class editarAdmin extends javax.swing.JFrame {
 //            }
 //        });
 //    }
-    
+        public String passwordMD5(String password) {
+        return DigestUtils.md5Hex(password).toUpperCase();
+    }
 public ObjectNode Editar() {
         ObjectNode respostaDoServidor;
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode jsonData = objectMapper.createObjectNode();
-        if(id.equals("")){
+//        if(id.equals("")){
+//            String name = txtNome.getText();
+//            String email = txtEmail.getText();
+//            String password = null;
+//            boolean type= adminCheck.isSelected();
+//            String tipo = type ? "admin": "user";
+//            jsonData.put("name", name);
+//            jsonData.put("email",email);
+//            jsonData.put("password",password);
+//
+//            jsonData.put("user_id", id);
+//            jsonData.put("type",tipo);
+//            jsonData.put("token",authToken);
+//
+//            ObjectNode jsonToSend = objectMapper.createObjectNode();
+//            jsonToSend.put("action", "edicao-usuario");
+//            jsonToSend.set("data", jsonData);
+//            respostaDoServidor = cliente.enviarSolicitacao(jsonToSend);
+//        }else{
             String name = txtNome.getText();
             String email = txtEmail.getText();
-            String password = null;
+            String password =  new String(txtPassword.getPassword());
+            if (password != null && !password.isEmpty()){
+                password = passwordMD5(password);
+            }else{password = null;}           
             boolean type= adminCheck.isSelected();
-            jsonData.put("name", name);
-            jsonData.put("email",email);
-            jsonData.put("password",password);
-            Claims claims = createJWT.verifyJwtToken(authToken);
-            System.out.println(claims);
-            jsonData.put("user_id", claims.get("user_id", String.class));
-            jsonData.put("type",type);
-            jsonData.put("token",authToken);
-
-            ObjectNode jsonToSend = objectMapper.createObjectNode();
-            jsonToSend.put("action", "edicao-usuario");
-            jsonToSend.set("data", jsonData);
-
-
-            // Envie os dados para o servidor (substitua 'DadosParaServidor' pelos dados reais)
-            respostaDoServidor = cliente.enviarSolicitacao(jsonToSend);
-        }else{
-            String name = txtNome.getText();
-            String email = txtEmail.getText();
-            String password = null;
-            boolean type= adminCheck.isSelected();
+            String tipo = type ? "admin": "user";
             jsonData.put("name", name);
             jsonData.put("email",email);
             jsonData.put("password",password);
             jsonData.put("user_id",id);
-            jsonData.put("type",type);
+            jsonData.put("type",tipo);
             jsonData.put("token",authToken);
 
             ObjectNode jsonToSend = objectMapper.createObjectNode();
@@ -283,36 +299,37 @@ public ObjectNode Editar() {
 
             // Envie os dados para o servidor (substitua 'DadosParaServidor' pelos dados reais)
             respostaDoServidor = cliente.enviarSolicitacao(jsonToSend);
-        }
+//        }
         return respostaDoServidor;
     }    
     
+
 public void getDados(){
-    if(id.equals("")){
-        ObjectNode respostaDoServidor;
-        ObjectMapper objectMapper = new ObjectMapper();
-        ObjectNode jsonData = objectMapper.createObjectNode();
-        jsonData.put("token", authToken);
-        Claims claims = createJWT.verifyJwtToken(authToken);
-        jsonData.put("user_id", claims.get("user_id", String.class));
-        ObjectNode jsonToSend = objectMapper.createObjectNode();
-        jsonToSend.put("action", "pedido-edicao-usuario");
-        jsonToSend.set("data", jsonData);
-
-        respostaDoServidor = cliente.enviarSolicitacao(jsonToSend);
-        System.out.println(respostaDoServidor);
-
-        boolean isError = respostaDoServidor.get("error").asBoolean();
-        if(isError){
-            mostrarAviso(respostaDoServidor.get("message").asText());
-        }else{
-                JsonNode dataNode = respostaDoServidor.get("data").path("user");
-                
-                txtNome.setText(dataNode.get("name").asText());
-                txtEmail.setText(dataNode.get("email").asText());
-                adminCheck.setSelected(dataNode.get("type").asBoolean());
-        }
-    }else{
+//    if(id.equals("")){
+//        ObjectNode respostaDoServidor;
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        ObjectNode jsonData = objectMapper.createObjectNode();
+//        jsonData.put("token", authToken);
+//        jsonData.put("user_id", id);
+//        ObjectNode jsonToSend = objectMapper.createObjectNode();
+//        jsonToSend.put("action", "pedido-edicao-usuario");
+//        jsonToSend.set("data", jsonData);
+//
+//        respostaDoServidor = cliente.enviarSolicitacao(jsonToSend);
+//        System.out.println(respostaDoServidor);
+//
+//        boolean isError = respostaDoServidor.get("error").asBoolean();
+//        if(isError){
+//            mostrarAviso(respostaDoServidor.get("message").asText());
+//        }else{
+//                JsonNode dataNode = respostaDoServidor.get("data").path("user");
+//                
+//                txtNome.setText(dataNode.get("name").asText());
+//                txtEmail.setText(dataNode.get("email").asText());
+//                boolean tipo = (dataNode.get("type").asText()).equals("admin") ? true: false;
+//                adminCheck.setSelected(tipo);
+//        }
+//    }else{
         ObjectNode respostaDoServidor;
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode jsonData = objectMapper.createObjectNode();
@@ -333,9 +350,11 @@ public void getDados(){
                 
                 txtNome.setText(dataNode.get("name").asText());
                 txtEmail.setText(dataNode.get("email").asText());
-                adminCheck.setSelected(dataNode.get("type").asBoolean());
+                       
+                boolean type= (dataNode.get("type").asText()).equals("admin")? true: false;
+                adminCheck.setSelected(type);
         }
-    }
+//    }
 }
 public void mostrarAviso(String mensagem) {
         JOptionPane.showMessageDialog(this, mensagem, "Aviso", JOptionPane.INFORMATION_MESSAGE);
@@ -346,11 +365,13 @@ public void mostrarAviso(String mensagem) {
     private javax.swing.JButton btnEnviar;
     private javax.swing.JButton btnVoltar;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JTextField txtEmail;
     private javax.swing.JTextField txtNome;
+    private javax.swing.JPasswordField txtPassword;
     // End of variables declaration//GEN-END:variables
 }

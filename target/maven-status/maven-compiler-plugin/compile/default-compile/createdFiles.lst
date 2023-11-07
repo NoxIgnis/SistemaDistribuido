@@ -46,6 +46,7 @@ views\cadastroAdmin$3.class
 views\client.class
 views\login$4.class
 sistema\Servidor.class
+views\editarCliente$5.class
 views\indexCliente$3.class
 views\cadastroCliente.class
 views\login$1.class
