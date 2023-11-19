@@ -321,12 +321,7 @@ public class Servidor extends Thread
                             userNode.put("type", type);
                             userNode.put("email", resultSet.getString("email"));
                             dataResponse.set("user", userNode); // Definir o nó "user" em "data"
-                            
-//                            String userId = resultSet.getString("id");
-//                            boolean userAdmin = resultSet.getBoolean("isAdmin");
 
-//                            dataResponse.put("token", token);
-                           
                             responseJson.set("data", dataResponse);
                            
                         } else {
@@ -519,8 +514,176 @@ public class Servidor extends Thread
                     responseJson.put("message", "Todos os campos devem ser preenchidos para a atualização.");
                 }
 
-             }
-                
+             }else if (action.equals("cadastro-ponto")){
+                try {
+                    String consultaInsercao;
+                    String obs = dataNode.get("obs").asText();
+                    String name = dataNode.get("name").asText();
+
+                    if (obs != null && !obs.isEmpty() && name != null && !name.isEmpty()) {
+                        consultaInsercao = "INSERT INTO `pontos`(`nome`, `observacao`) VALUES ('"+ name +"','"+obs+"')";
+                         PreparedStatement preparedStatement;
+                         preparedStatement = conexao.prepareStatement(consultaInsercao);
+
+                       int linhasAfetadas = preparedStatement.executeUpdate();
+                       if(linhasAfetadas == 1){
+                                responseJson = objectMapper.createObjectNode();
+                                responseJson.put("action", "cadastro-ponto");
+                                responseJson.put("error", false);
+                                responseJson.put("message", "Ponto cadastrado com sucesso!");
+                       }else{
+                                responseJson = objectMapper.createObjectNode();
+                                responseJson.put("action", "cadastro-ponto");
+                                responseJson.put("error",true);
+                                responseJson.put("message", "erro ao cadastrar");
+                       }
+                    } else {
+                        responseJson = objectMapper.createObjectNode();
+                        responseJson.put("action", "cadastro-pontolis");
+                        responseJson.put("error",true);
+                        responseJson.put("message", "todos os dados devem ser preenchidos");
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
+                }
+             }else if(action.equals("listar-pontos")){
+                 
+                    String consultaSelecao = "SELECT DISTINCT * FROM pontos";
+                    PreparedStatement preparedStatement;
+                    preparedStatement = conexao.prepareStatement(consultaSelecao);
+                    ResultSet resultSet = preparedStatement.executeQuery();
+
+                    if (resultSet.next()) {
+                        responseJson.put("action", "listar-pontos");
+                        responseJson.put("error", false);
+                        responseJson.put("message", "Sucesso");
+
+                        ArrayNode usersArray = objectMapper.createArrayNode();
+
+                        do {
+                            ObjectNode userNode = objectMapper.createObjectNode();
+                            userNode.put("id", resultSet.getInt("id"));
+                            userNode.put("name", resultSet.getString("nome"));
+
+                            userNode.put("obs", resultSet.getString("observacao"));
+                            usersArray.add(userNode);
+                        } while (resultSet.next());
+
+                        ObjectNode dataResponse = objectMapper.createObjectNode();
+                        dataResponse.set("pontos", usersArray);
+
+                        responseJson.set("data", dataResponse);
+                    } else {
+                        responseJson.put("action", "listar-pontos");
+                        responseJson.put("error", true);
+                        responseJson.put("message", "Nenhum usuário encontrado");
+                    }
+                    // Agora responseJson contém o JSON no formato desejado com os dados dos usuários.
+             }else if (action.equals("excluir-ponto")){
+                 String consultaDelete;
+                String id = dataNode.get("ponto_id").asText();
+                if (id != null && !id.isEmpty()) {
+                    consultaDelete = "DELETE FROM `pontos` WHERE `id` = ? ";
+
+                    PreparedStatement preparedStatement;
+                    preparedStatement = conexao.prepareStatement(consultaDelete);
+
+                    preparedStatement.setString(1, id);
+
+                    int linhasAfetadas = preparedStatement.executeUpdate();
+                    if (linhasAfetadas == 1) {
+                        responseJson = objectMapper.createObjectNode();
+                        responseJson.put("action", "excluir-ponto");
+                        responseJson.put("error", false);
+                        responseJson.put("message", "Ponto Excluido com sucesso!");
+                    } else {
+                        responseJson = objectMapper.createObjectNode();
+                        responseJson.put("action", "excluir-ponto");
+                        responseJson.put("error", true);
+                        responseJson.put("message", "Erro ao Excluir o Ponto.");
+                    }
+                } else {
+                    responseJson = objectMapper.createObjectNode();
+                    responseJson.put("action", "excluir-proprio-usuario");
+                    responseJson.put("error", true);
+                    responseJson.put("message", "Erro ao realizar EXCLUSÃO.");
+                }
+             }else if (action.equals("edicao-ponto")){
+                String consultaAtualizacao;           
+                String name = dataNode.get("name").asText();
+                String ponto_id = dataNode.get("ponto_id").asText();
+                String obs = dataNode.get("obs").asText();
+
+                if (obs != null && !obs.isEmpty() && name != null && !name.isEmpty()) {
+                    consultaAtualizacao = "UPDATE `pontos` SET `nome` = ?, `observacao` = ? WHERE `id` = ?";
+
+                    PreparedStatement preparedStatement;
+                    preparedStatement = conexao.prepareStatement(consultaAtualizacao);
+
+                    preparedStatement.setString(1, name);
+                    preparedStatement.setString(2, obs);
+                    preparedStatement.setString(3, ponto_id);
+
+                    int linhasAfetadas = preparedStatement.executeUpdate();
+                    if (linhasAfetadas == 1) {
+                        responseJson = objectMapper.createObjectNode();
+                        responseJson.put("action", "edicao-ponto");
+                        responseJson.put("error", false);
+                        responseJson.put("message", "Ponto atualizado com sucesso!");
+                    } else {
+                        responseJson = objectMapper.createObjectNode();
+                        responseJson.put("action", "edicao-ponto");
+                        responseJson.put("error", true);
+                        responseJson.put("message", "Erro ao atualizar o Ponto. Verifique os dados fornecidos.");
+                    }
+                } else {
+                    responseJson = objectMapper.createObjectNode();
+                    responseJson.put("action", "edicao-ponto");
+                    responseJson.put("error", true);
+                    responseJson.put("message", "Todos os campos devem ser preenchidos para a atualização.");
+                }
+
+             }else if(action.equals("pedido-edicao-ponto")){
+                 
+                String token = dataNode.get("token").asText();
+                String id = dataNode.get("ponto_id").asText();
+
+                if(token != null && !token.isEmpty() && id !=null && !id.isEmpty()){
+                    Claims claims = createJWT.verifyJwtToken(token);
+                    try {
+                        String consultaSelecao = "SELECT * FROM pontos WHERE id = ?";
+                        PreparedStatement preparedStatement;
+                        preparedStatement = conexao.prepareStatement(consultaSelecao);
+
+                        preparedStatement.setString(1, id);
+                        ResultSet resultSet = preparedStatement.executeQuery();
+
+                        if (resultSet.next()) {
+                            // O usuário foi encontrado
+                            responseJson = objectMapper.createObjectNode();
+                            responseJson.put("action", "pedido-edicao-ponto");
+                            responseJson.put("error", false);
+                            responseJson.put("message", "Sucesso");
+                            ObjectNode dataResponse = objectMapper.createObjectNode();
+                            ObjectNode pontoNode = objectMapper.createObjectNode();
+                            pontoNode.put("id", resultSet.getInt("id"));
+                            pontoNode.put("name", resultSet.getString("nome"));                          
+                            pontoNode.put("obs", resultSet.getString("observacao"));
+                            dataResponse.set("ponto", pontoNode); // Definir o nó "user" em "data"
+                            responseJson.set("data", dataResponse);
+                           
+                        } else {
+                            responseJson = objectMapper.createObjectNode();
+                            responseJson.put("action", "pedido-edicao-ponto");
+                            responseJson.put("error", true);
+                            responseJson.put("message", "Usuario não encontrado");
+
+                        }
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }       
+                }
+             }                
                 String jsonString=objectMapper.writeValueAsString(responseJson);
                 System.out.println("Resposta para Cliente ->"+jsonString);
                 out.println(jsonString);
