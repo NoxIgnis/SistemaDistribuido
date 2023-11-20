@@ -604,7 +604,7 @@ public class Servidor extends Thread
                     }
                 } else {
                     responseJson = objectMapper.createObjectNode();
-                    responseJson.put("action", "excluir-proprio-usuario");
+                    responseJson.put("action", "excluir-ponto");
                     responseJson.put("error", true);
                     responseJson.put("message", "Erro ao realizar EXCLUSÃO.");
                 }
@@ -683,7 +683,253 @@ public class Servidor extends Thread
                         e.printStackTrace();
                     }       
                 }
-             }                
+             }else if (action.equals("cadastro-segmento")){
+                try {
+                    String consultaInsercao;
+                    JsonNode segmentoNode = dataNode.get("segmento");
+                    String pontoOrigemId = segmentoNode.get("ponto_origem").get("id").asText();
+                    String pontoDestinoId = segmentoNode.get("ponto_destino").get("id").asText();
+
+                    String obs = segmentoNode.get("obs").asText();
+                    String direcao = segmentoNode.get("direcao").asText();
+                    String distancia = segmentoNode.get("distancia").asText();
+
+
+                    if (obs != null && !obs.isEmpty() && pontoOrigemId != null && !pontoOrigemId.isEmpty()&& pontoDestinoId != null && !pontoDestinoId.isEmpty() && distancia != null && !distancia.isEmpty()&& direcao != null && !direcao.isEmpty() && direcao != null && !direcao.isEmpty()) {
+                        consultaInsercao = "INSERT INTO `Segmentos`(`origem`, `destino`,`distancia`,`direcao`,`observacao`) VALUES ('"+ pontoOrigemId +"','"+pontoDestinoId+"','"+distancia+"','"+direcao+"','"+obs+"')";
+                         PreparedStatement preparedStatement;
+                         preparedStatement = conexao.prepareStatement(consultaInsercao);
+
+                       int linhasAfetadas = preparedStatement.executeUpdate();
+                       if(linhasAfetadas == 1){
+                                responseJson = objectMapper.createObjectNode();
+                                responseJson.put("action", "cadastro-segmento");
+                                responseJson.put("error", false);
+                                responseJson.put("message", "segmento cadastrado com sucesso!");
+                       }else{
+                                responseJson = objectMapper.createObjectNode();
+                                responseJson.put("action", "cadastro-segmento");
+                                responseJson.put("error",true);
+                                responseJson.put("message", "erro ao cadastrar");
+                       }
+                    } else {
+                        responseJson = objectMapper.createObjectNode();
+                        responseJson.put("action", "cadastro-segmento");
+                        responseJson.put("error",true);
+                        responseJson.put("message", "todos os dados devem ser preenchidos");
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
+                }
+             }else if(action.equals("listar-segmentos")){
+                 
+                    String consultaSelecao = """
+                        SELECT
+                            s.id, 
+                            `p_origem`.id AS ponto_origem_id,
+                            `p_origem`.nome AS ponto_origem_nome,
+                            `p_origem`.observacao AS ponto_origem_obs,
+                            `p_destino`.id AS ponto_destino_id,
+                            `p_destino`.nome AS ponto_destino_nome,
+                            `p_destino`.observacao AS ponto_destino_obs,
+                            s.direcao,
+                            s.distancia,
+                            s.observacao
+                        FROM
+                            segmentos s
+                        LEFT JOIN
+                            pontos `p_origem` ON s.origem = p_origem.id
+                        LEFT JOIN 
+                            pontos `p_destino` ON s.destino = p_destino.id
+                                                                          """;
+                    PreparedStatement preparedStatement;
+                    preparedStatement = conexao.prepareStatement(consultaSelecao);
+                    ResultSet resultSet = preparedStatement.executeQuery();
+
+                    if (resultSet.next()) {
+                        responseJson.put("action", "listar-segmentos");  // Updated action to match JSON structure
+                        responseJson.put("error", false);
+                        responseJson.put("message", "Sucesso");
+
+                        ArrayNode segmentsArray = objectMapper.createArrayNode();  // Updated array name
+
+                        do {
+                            ObjectNode segmentNode = objectMapper.createObjectNode();
+                            segmentNode.put("id", resultSet.getInt("id"));
+
+                            // Populate ponto_origem
+                            ObjectNode pontoOrigemNode = objectMapper.createObjectNode();
+                            pontoOrigemNode.put("id", resultSet.getInt("ponto_origem_id"));
+                            pontoOrigemNode.put("name", resultSet.getString("ponto_origem_nome"));
+                            pontoOrigemNode.put("obs", resultSet.getString("ponto_origem_obs"));
+                            segmentNode.set("ponto_origem", pontoOrigemNode);
+
+                            // Populate ponto_destino
+                            ObjectNode pontoDestinoNode = objectMapper.createObjectNode();
+                            pontoDestinoNode.put("id", resultSet.getInt("ponto_destino_id"));
+                            pontoDestinoNode.put("name", resultSet.getString("ponto_destino_nome"));
+                            pontoDestinoNode.put("obs", resultSet.getString("ponto_destino_obs"));
+                            segmentNode.set("ponto_destino", pontoDestinoNode);
+
+                            segmentNode.put("direcao", resultSet.getString("direcao"));
+                            segmentNode.put("distancia", resultSet.getString("distancia"));
+                            segmentNode.put("obs", resultSet.getString("observacao"));
+
+                            segmentsArray.add(segmentNode);
+                        } while (resultSet.next());
+
+                        ObjectNode dataResponse = objectMapper.createObjectNode();
+                        dataResponse.set("segmentos", segmentsArray);  // Updated data key
+
+                        responseJson.set("data", dataResponse);
+                    } else {
+                        responseJson.put("action", "listar-segmentos");  // Updated action to match JSON structure
+                        responseJson.put("error", true);
+                        responseJson.put("message", "Nenhum segmento encontrado");  // Updated message
+                    }
+
+                    // Agora responseJson contém o JSON no formato desejado com os dados dos usuários.
+             }else if (action.equals("excluir-segmento")){
+                 String consultaDelete;
+                String id = dataNode.get("ponto_id").asText();
+                if (id != null && !id.isEmpty()) {
+                    consultaDelete = "DELETE FROM `segmentos` WHERE `id` = ? ";
+
+                    PreparedStatement preparedStatement;
+                    preparedStatement = conexao.prepareStatement(consultaDelete);
+
+                    preparedStatement.setString(1, id);
+
+                    int linhasAfetadas = preparedStatement.executeUpdate();
+                    if (linhasAfetadas == 1) {
+                        responseJson = objectMapper.createObjectNode();
+                        responseJson.put("action", "excluir-segmento");
+                        responseJson.put("error", false);
+                        responseJson.put("message", "Ponto Excluido com sucesso!");
+                    } else {
+                        responseJson = objectMapper.createObjectNode();
+                        responseJson.put("action", "excluir-segmento");
+                        responseJson.put("error", true);
+                        responseJson.put("message", "Erro ao Excluir o Ponto.");
+                    }
+                } else {
+                    responseJson = objectMapper.createObjectNode();
+                    responseJson.put("action", "excluir-segmento");
+                    responseJson.put("error", true);
+                    responseJson.put("message", "Erro ao realizar EXCLUSÃO.");
+                }
+             }else if(action.equals("pedido-edicao-segmento")){
+                
+                String id = dataNode.get("segmento_id").asText();
+                    String consultaSelecao = """
+                        SELECT
+                            s.id, 
+                            `p_origem`.id AS ponto_origem_id,
+                            `p_origem`.nome AS ponto_origem_nome,
+                            `p_origem`.observacao AS ponto_origem_obs,
+                            `p_destino`.id AS ponto_destino_id,
+                            `p_destino`.nome AS ponto_destino_nome,
+                            `p_destino`.observacao AS ponto_destino_obs,
+                            s.direcao,
+                            s.distancia,
+                            s.observacao
+                        FROM
+                            segmentos s
+                        LEFT JOIN
+                            pontos `p_origem` ON s.origem = p_origem.id
+                        LEFT JOIN 
+                            pontos `p_destino` ON s.destino = p_destino.id
+                        WHERE
+                            s.id = ?
+                                                                          """;
+                        PreparedStatement preparedStatement;
+                        preparedStatement = conexao.prepareStatement(consultaSelecao);
+
+                        preparedStatement.setString(1, id);
+                        ResultSet resultSet = preparedStatement.executeQuery();
+
+                    if (resultSet.next()) {
+                        responseJson.put("action", "pedido-edicao-segmento");  // Updated action to match JSON structure
+                        responseJson.put("error", false);
+                        responseJson.put("message", "Sucesso");
+
+                            ObjectNode segmentNode = objectMapper.createObjectNode();
+                            segmentNode.put("id", resultSet.getInt("id"));
+
+                            // Populate ponto_origem
+                            ObjectNode pontoOrigemNode = objectMapper.createObjectNode();
+                            pontoOrigemNode.put("id", resultSet.getInt("ponto_origem_id"));
+                            pontoOrigemNode.put("name", resultSet.getString("ponto_origem_nome"));
+                            pontoOrigemNode.put("obs", resultSet.getString("ponto_origem_obs"));
+                            segmentNode.set("ponto_origem", pontoOrigemNode);
+
+                            // Populate ponto_destino
+                            ObjectNode pontoDestinoNode = objectMapper.createObjectNode();
+                            pontoDestinoNode.put("id", resultSet.getInt("ponto_destino_id"));
+                            pontoDestinoNode.put("name", resultSet.getString("ponto_destino_nome"));
+                            pontoDestinoNode.put("obs", resultSet.getString("ponto_destino_obs"));
+                            segmentNode.set("ponto_destino", pontoDestinoNode);
+
+                            segmentNode.put("direcao", resultSet.getString("direcao"));
+                            segmentNode.put("distancia", resultSet.getString("distancia"));
+                            segmentNode.put("obs", resultSet.getString("observacao"));
+
+
+                        ObjectNode dataResponse = objectMapper.createObjectNode();
+                        dataResponse.set("segmento", segmentNode);  // Updated data key
+
+                        responseJson.set("data", dataResponse);
+                    } else {    
+                        responseJson.put("action", "pedido-edicao-segmento");  // Updated action to match JSON structure
+                        responseJson.put("error", true);
+                        responseJson.put("message", "Nenhum segmento encontrado");  // Updated message
+                    }
+
+                    // Agora responseJson contém o JSON no formato desejado com os dados dos usuários.
+             }else if (action.equals("edicao-segmento")){
+                String consultaAtualizacao;           
+                JsonNode segmentoNode = dataNode.get("segmento");
+                String id =dataNode.get("segmento_id").asText();
+                String pontoOrigemId = segmentoNode.get("ponto_origem").get("id").asText();
+                String pontoDestinoId = segmentoNode.get("ponto_destino").get("id").asText();
+
+                String obs = segmentoNode.get("obs").asText();
+                String direcao = segmentoNode.get("direcao").asText();
+                String distancia = segmentoNode.get("distancia").asText();
+
+                if (obs != null && !obs.isEmpty() && pontoOrigemId != null && !pontoOrigemId.isEmpty()&& pontoDestinoId != null && !pontoDestinoId.isEmpty()) {
+                    consultaAtualizacao = "UPDATE `segmentos` SET `origem` = ?, `destino` = ?, `distancia` = ?, `direcao` = ? , `observacao` = ? WHERE `id` = ?";
+
+                    PreparedStatement preparedStatement;
+                    preparedStatement = conexao.prepareStatement(consultaAtualizacao);
+
+                    preparedStatement.setString(1, pontoOrigemId);
+                    preparedStatement.setString(2, pontoDestinoId);
+                    preparedStatement.setString(3, distancia);
+                    preparedStatement.setString(4, direcao);
+                    preparedStatement.setString(5, obs);
+                    preparedStatement.setString(6, id);
+
+                    int linhasAfetadas = preparedStatement.executeUpdate();
+                    if (linhasAfetadas == 1) {
+                        responseJson = objectMapper.createObjectNode();
+                        responseJson.put("action", "edicao-segmento");
+                        responseJson.put("error", false);
+                        responseJson.put("message", "segmento atualizado com sucesso!");
+                    } else {
+                        responseJson = objectMapper.createObjectNode();
+                        responseJson.put("action", "edicao-segmento");
+                        responseJson.put("error", true);
+                        responseJson.put("message", "Erro ao atualizar o Ponto. Verifique os dados fornecidos.");
+                    }
+                } else {
+                    responseJson = objectMapper.createObjectNode();
+                    responseJson.put("action", "edicao-segmento");
+                    responseJson.put("error", true);
+                    responseJson.put("message", "Todos os campos devem ser preenchidos para a atualização.");
+                }
+
+             }
                 String jsonString=objectMapper.writeValueAsString(responseJson);
                 System.out.println("Resposta para Cliente ->"+jsonString);
                 out.println(jsonString);

@@ -15,23 +15,23 @@ import sistema.Cliente;
  *
  * @author henri
  */
-public class listarPontos extends javax.swing.JFrame {
+public class listarSegmentos extends javax.swing.JFrame {
 
     /**
-     * Creates new form listarPontos
+     * Creates new form listarSegmentos
      */
     public Cliente cliente;
     private String authToken;
     public String ip;
     public int porta;
 
-    public listarPontos(String token,String ip,int porta) {
+    public listarSegmentos(String token,String ip,int porta) {
         initComponents();
         this.authToken = token;
         cliente = Cliente.getInstance(ip, porta);
         this.ip = ip;
         this.porta = porta;
-        pontosListar(token);
+        segmentosListar(token);
     }
 
     /**
@@ -43,31 +43,40 @@ public class listarPontos extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        txtEditar = new javax.swing.JTextField();
+        btnEditar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbClientes = new javax.swing.JTable();
         jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         txtDeletar = new javax.swing.JTextField();
         btnDeletar = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
-        txtEditar = new javax.swing.JTextField();
-        btnEditar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel3.setText("ID Editar");
+
+        btnEditar.setText("Editar");
+        btnEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarActionPerformed(evt);
+            }
+        });
 
         tbClientes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "ID", "Nome", "Observações"
+                "ID", "Origem", "Origem nome", "Origem obs", "Destino", "Destino nome", "Destino obs", "Distância", "Direção", "Observações"
             }
         ));
         jScrollPane1.setViewportView(tbClientes);
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel2.setText("Lista de Pontos");
+        jLabel2.setText("Lista de Segmentos");
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel1.setText("ID Deletar");
@@ -85,30 +94,20 @@ public class listarPontos extends javax.swing.JFrame {
             }
         });
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel3.setText("ID Editar");
-
-        btnEditar.setText("Editar");
-        btnEditar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditarActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
                 .addGap(19, 19, 19)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(415, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 850, Short.MAX_VALUE)
                         .addGap(26, 26, 26)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(txtDeletar, javax.swing.GroupLayout.DEFAULT_SIZE, 71, Short.MAX_VALUE)
                             .addComponent(jLabel1)
                             .addComponent(btnDeletar, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
@@ -117,15 +116,15 @@ public class listarPontos extends javax.swing.JFrame {
                             .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                         .addGap(26, 26, 26))))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(26, Short.MAX_VALUE)
                 .addComponent(jLabel2)
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(txtDeletar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -140,19 +139,20 @@ public class listarPontos extends javax.swing.JFrame {
                 .addGap(24, 24, 24))
         );
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        // TODO add your handling code here:
+        String id = txtEditar.getText();
+        if(id==null){
+            mostrarAviso("Id não pode ser nulo");
+        }else{
+            editarSegmento segmento = new editarSegmento(authToken, ip,porta,id);
+            this.dispose();
+            segmento.setVisible(true);
+        }
+    }//GEN-LAST:event_btnEditarActionPerformed
 
     private void txtDeletarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDeletarActionPerformed
         // TODO add your handling code here:
@@ -165,24 +165,12 @@ public class listarPontos extends javax.swing.JFrame {
         if(isError){
             mostrarAviso(retorno.get("message").asText());
         }else{
-            listarPontos listar = new listarPontos(authToken, ip,porta);
+            listarSegmentos segmentos = new listarSegmentos(authToken, ip,porta);
             this.dispose();
-            listar.setVisible(true);
-            listar.mostrarAviso(retorno.get("message").asText());
+            segmentos.setVisible(true);
+            segmentos.mostrarAviso(retorno.get("message").asText());
         }
     }//GEN-LAST:event_btnDeletarActionPerformed
-
-    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-        // TODO add your handling code here:
-        String id = txtEditar.getText();
-        if(id==null){
-            mostrarAviso("Id não pode ser nulo");
-        }else{
-            editarPonto ponto = new editarPonto(authToken, ip,porta,id);
-            this.dispose();
-            ponto.setVisible(true);
-        }
-    }//GEN-LAST:event_btnEditarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -201,32 +189,31 @@ public class listarPontos extends javax.swing.JFrame {
 //                }
 //            }
 //        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(listarPontos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//            java.util.logging.Logger.getLogger(listarSegmentos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(listarPontos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//            java.util.logging.Logger.getLogger(listarSegmentos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(listarPontos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//            java.util.logging.Logger.getLogger(listarSegmentos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(listarPontos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//            java.util.logging.Logger.getLogger(listarSegmentos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //        }
 //        //</editor-fold>
 //
 //        /* Create and display the form */
 //        java.awt.EventQueue.invokeLater(new Runnable() {
 //            public void run() {
-//                new listarPontos().setVisible(true);
+//                new listarSegmentos().setVisible(true);
 //            }
 //        });
 //    }
-    
-    public void pontosListar(String token) {
+public void segmentosListar(String token) {
     ObjectNode respostaDoServidor;
     
     ObjectMapper objectMapper = new ObjectMapper();
     ObjectNode jsonData = objectMapper.createObjectNode();
     jsonData.put("token", token);
     ObjectNode jsonToSend = objectMapper.createObjectNode();
-    jsonToSend.put("action", "listar-pontos");
+    jsonToSend.put("action", "listar-segmentos");
     jsonToSend.set("data", jsonData);
     
     ObjectNode retorno =  respostaDoServidor = cliente.enviarSolicitacao(jsonToSend);
@@ -240,14 +227,23 @@ public class listarPontos extends javax.swing.JFrame {
 
         try {
             JsonNode dataNode = respostaDoServidor.path("data");
-            JsonNode users = dataNode.path("pontos");
+            JsonNode segmentos = dataNode.path("segmentos");
 
-            for (JsonNode user : users) {
-                int id = user.get("id").asInt();
-                String name = user.get("name").asText();
-                String observacao = user.get("obs").asText();
+            for (JsonNode segmento : segmentos) {
+                int id = segmento.get("id").asInt();
+                String direcao=segmento.get("direcao").asText();
+                String distancia=segmento.get("distancia").asText();
+                String obs=segmento.get("obs").asText();
 
-                Object[] rowData = { id, name,observacao };
+                String origem=segmento.get("ponto_origem").get("id").asText();
+                String origem_name = segmento.get("ponto_origem").get("name").asText();
+                String origem_observacao = segmento.get("ponto_origem").get("obs").asText();
+                
+                String destino=segmento.get("ponto_destino").get("id").asText();
+                String destino_name = segmento.get("ponto_destino").get("name").asText();
+                String destino_observacao = segmento.get("ponto_destino").get("obs").asText();
+
+                Object[] rowData = { id, origem,origem_name, origem_observacao,destino,destino_name,destino_observacao, distancia, direcao, obs};
                 modelo.addRow(rowData);
             }
         } catch (Exception e) {
@@ -261,7 +257,7 @@ public class listarPontos extends javax.swing.JFrame {
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode jsonToSend = objectMapper.createObjectNode();
 
-        jsonToSend.put("action", "excluir-ponto");
+        jsonToSend.put("action", "excluir-segmento");
 
         ObjectNode data = objectMapper.createObjectNode();
         data.put("token", authToken);
@@ -275,14 +271,12 @@ public class listarPontos extends javax.swing.JFrame {
 public void mostrarAviso(String mensagem) {
         JOptionPane.showMessageDialog(this, mensagem, "Aviso", JOptionPane.INFORMATION_MESSAGE);
     }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDeletar;
     private javax.swing.JButton btnEditar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tbClientes;
     private javax.swing.JTextField txtDeletar;

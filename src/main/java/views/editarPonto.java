@@ -79,7 +79,7 @@ public class editarPonto extends javax.swing.JFrame {
 
         jLabel1.setText("Observacao");
 
-        btnCadastrar.setText("Cadastrar");
+        btnCadastrar.setText("Editar");
         btnCadastrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCadastrarActionPerformed(evt);
