@@ -581,22 +581,43 @@ public class Servidor extends Thread
                     // Agora responseJson contém o JSON no formato desejado com os dados dos usuários.
              }else if (action.equals("excluir-ponto")){
                  String consultaDelete;
+                 String consultaCascate;
+                int linhasAfetadas;
+
                 String id = dataNode.get("ponto_id").asText();
                 if (id != null && !id.isEmpty()) {
-                    consultaDelete = "DELETE FROM `pontos` WHERE `id` = ? ";
+                    consultaCascate= "DELETE FROM `segmentos` WHERE `origem` = ? OR `destino` = ?";
 
-                    PreparedStatement preparedStatement;
-                    preparedStatement = conexao.prepareStatement(consultaDelete);
+                    PreparedStatement preparedCascate;
+                    preparedCascate = conexao.prepareStatement(consultaCascate);
 
-                    preparedStatement.setString(1, id);
+                    preparedCascate.setString(1, id);
+                    preparedCascate.setString(2, id);
+                    
+                    linhasAfetadas = preparedCascate.executeUpdate();
 
-                    int linhasAfetadas = preparedStatement.executeUpdate();
-                    if (linhasAfetadas == 1) {
-                        responseJson = objectMapper.createObjectNode();
-                        responseJson.put("action", "excluir-ponto");
-                        responseJson.put("error", false);
-                        responseJson.put("message", "Ponto Excluido com sucesso!");
-                    } else {
+                    if(linhasAfetadas == 1){
+                        consultaDelete = "DELETE FROM `pontos` WHERE `id` = ? ";
+
+                        PreparedStatement preparedStatement;
+                        preparedStatement = conexao.prepareStatement(consultaDelete);
+
+                        preparedStatement.setString(1, id);
+
+                        linhasAfetadas = preparedStatement.executeUpdate();
+                        
+                        if (linhasAfetadas == 1) {
+                            responseJson = objectMapper.createObjectNode();                        
+                            responseJson.put("action", "excluir-ponto");
+                            responseJson.put("error", false);
+                            responseJson.put("message", "Ponto Excluido com sucesso!");
+                        } else {
+                            responseJson = objectMapper.createObjectNode();
+                            responseJson.put("action", "excluir-ponto");
+                            responseJson.put("error", true);
+                            responseJson.put("message", "Erro ao Excluir o Ponto.");
+                        }
+                    }else{
                         responseJson = objectMapper.createObjectNode();
                         responseJson.put("action", "excluir-ponto");
                         responseJson.put("error", true);
@@ -606,7 +627,7 @@ public class Servidor extends Thread
                     responseJson = objectMapper.createObjectNode();
                     responseJson.put("action", "excluir-ponto");
                     responseJson.put("error", true);
-                    responseJson.put("message", "Erro ao realizar EXCLUSÃO.");
+                    responseJson.put("message", "Verifique os dados enviados");
                 }
              }else if (action.equals("edicao-ponto")){
                 String consultaAtualizacao;           
@@ -810,7 +831,7 @@ public class Servidor extends Thread
                         responseJson = objectMapper.createObjectNode();
                         responseJson.put("action", "excluir-segmento");
                         responseJson.put("error", true);
-                        responseJson.put("message", "Erro ao Excluir o Ponto.");
+                        responseJson.put("message", "Erro ao Excluir o segmento.");
                     }
                 } else {
                     responseJson = objectMapper.createObjectNode();
