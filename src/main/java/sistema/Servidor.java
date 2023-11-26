@@ -791,7 +791,7 @@ public class Servidor extends Thread
                     // Agora responseJson contém o JSON no formato desejado com os dados dos usuários.
              }else if (action.equals("excluir-segmento")){
                  String consultaDelete;
-                String id = dataNode.get("ponto_id").asText();
+                String id = dataNode.get("segmento_id").asText();
                 if (id != null && !id.isEmpty()) {
                     consultaDelete = "DELETE FROM `segmentos` WHERE `id` = ? ";
 

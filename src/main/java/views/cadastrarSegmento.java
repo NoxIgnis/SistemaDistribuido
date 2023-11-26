@@ -293,12 +293,12 @@ public ObjectNode cadastrar() {
 
             for (JsonNode ponto : pontos) {
                 if(txtIdOrigem.getText().equals(ponto.get("id").asText())){
-                    pontoOrigem.put("id", ponto.get("id").asText());
+                    pontoOrigem.put("id", Integer.valueOf(ponto.get("id").asText()));
                     pontoOrigem.put("name", ponto.get("name").asText());
                     pontoOrigem.put("obs",ponto.get("obs").asText());
                 }
                 if(txtIdDestino.getText().equals(ponto.get("id").asText())){
-                    pontoDestino.put("id", ponto.get("id").asText());
+                    pontoDestino.put("id", Integer.valueOf(ponto.get("id").asText()));
                     pontoDestino.put("name", ponto.get("name").asText());
                     pontoDestino.put("obs",ponto.get("obs").asText());
                 }
@@ -316,7 +316,7 @@ public ObjectNode cadastrar() {
         segmento.set("ponto_origem", pontoOrigem);
         segmento.set("ponto_destino", pontoDestino);
         segmento.put("direcao", txtDirecao.getText());
-        segmento.put("distancia", txtDistancia.getText());
+        segmento.put("distancia", Integer.valueOf(txtDistancia.getText()));
         segmento.put("obs",txtObservacao.getText());
 
         // Dados para o objeto principal

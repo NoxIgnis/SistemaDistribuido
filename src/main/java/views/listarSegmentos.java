@@ -148,7 +148,7 @@ public class listarSegmentos extends javax.swing.JFrame {
         if(id==null){
             mostrarAviso("Id não pode ser nulo");
         }else{
-            editarSegmento segmento = new editarSegmento(authToken, ip,porta,id);
+            editarSegmento segmento = new editarSegmento(authToken, ip,porta,Integer.valueOf(id));
             this.dispose();
             segmento.setVisible(true);
         }
@@ -261,7 +261,7 @@ public void segmentosListar(String token) {
 
         ObjectNode data = objectMapper.createObjectNode();
         data.put("token", authToken);
-        data.put("ponto_id",txtDeletar.getText());
+        data.put("segmento_id",Integer.valueOf(txtDeletar.getText()));
         jsonToSend.set("data", data);
         
         respostaDoServidor = cliente.enviarSolicitacao(jsonToSend);

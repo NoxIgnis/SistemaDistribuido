@@ -25,9 +25,9 @@ public class editarSegmento extends javax.swing.JFrame {
     public String ip;
     public int porta;
     public ObjectNode listarPontos;
-    public String id;
+    public int id;
        
-    public editarSegmento(String token,String ip,int porta,String id) {
+    public editarSegmento(String token,String ip,int porta,int id) {
         initComponents();
         this.authToken = token;
         cliente = Cliente.getInstance(ip, porta);
@@ -297,12 +297,12 @@ public ObjectNode editar() {
 
             for (JsonNode ponto : pontos) {
                 if(txtIdOrigem.getText().equals(ponto.get("id").asText())){
-                    pontoOrigem.put("id", ponto.get("id").asText());
+                    pontoOrigem.put("id", Integer.valueOf(ponto.get("id").asText()));
                     pontoOrigem.put("name", ponto.get("name").asText());
                     pontoOrigem.put("obs",ponto.get("obs").asText());
                 }
                 if(txtIdDestino.getText().equals(ponto.get("id").asText())){
-                    pontoDestino.put("id", ponto.get("id").asText());
+                    pontoDestino.put("id", Integer.valueOf(ponto.get("id").asText()));
                     pontoDestino.put("name", ponto.get("name").asText());
                     pontoDestino.put("obs",ponto.get("obs").asText());
                 }

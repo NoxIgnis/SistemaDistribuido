@@ -178,7 +178,7 @@ public class listarPontos extends javax.swing.JFrame {
         if(id==null){
             mostrarAviso("Id não pode ser nulo");
         }else{
-            editarPonto ponto = new editarPonto(authToken, ip,porta,id);
+            editarPonto ponto = new editarPonto(authToken, ip,porta,Integer.valueOf(id));
             this.dispose();
             ponto.setVisible(true);
         }
@@ -265,7 +265,7 @@ public class listarPontos extends javax.swing.JFrame {
 
         ObjectNode data = objectMapper.createObjectNode();
         data.put("token", authToken);
-        data.put("ponto_id",txtDeletar.getText());
+        data.put("ponto_id",Integer.valueOf(txtDeletar.getText()));
         jsonToSend.set("data", data);
         
         respostaDoServidor = cliente.enviarSolicitacao(jsonToSend);

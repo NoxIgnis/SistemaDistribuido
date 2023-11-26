@@ -23,7 +23,7 @@ public class editarPonto extends javax.swing.JFrame {
     private String authToken;
     public String ip;
     public int porta;
-    public String id = "";
+    public int id ;
 
 
     public editarPonto(String token,String ip,int porta) {
@@ -34,7 +34,7 @@ public class editarPonto extends javax.swing.JFrame {
         this.porta = porta;
     }
     
-        public editarPonto(String token,String ip,int porta,String id) {
+        public editarPonto(String token,String ip,int porta,int id) {
         initComponents();
         this.authToken = token;
         this.cliente = Cliente.getInstance(ip, porta);
