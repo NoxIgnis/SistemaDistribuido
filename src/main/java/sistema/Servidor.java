@@ -618,10 +618,26 @@ public class Servidor extends Thread
                             responseJson.put("message", "Erro ao Excluir o Ponto.");
                         }
                     }else{
-                        responseJson = objectMapper.createObjectNode();
-                        responseJson.put("action", "excluir-ponto");
-                        responseJson.put("error", true);
-                        responseJson.put("message", "Erro ao Excluir o Ponto.");
+                        consultaDelete = "DELETE FROM `pontos` WHERE `id` = ? ";
+
+                        PreparedStatement preparedStatement;
+                        preparedStatement = conexao.prepareStatement(consultaDelete);
+
+                        preparedStatement.setString(1, id);
+
+                        linhasAfetadas = preparedStatement.executeUpdate();
+                        
+                        if (linhasAfetadas == 1) {
+                            responseJson = objectMapper.createObjectNode();                        
+                            responseJson.put("action", "excluir-ponto");
+                            responseJson.put("error", false);
+                            responseJson.put("message", "Ponto Excluido com sucesso!");
+                        } else {
+                            responseJson = objectMapper.createObjectNode();
+                            responseJson.put("action", "excluir-ponto");
+                            responseJson.put("error", true);
+                            responseJson.put("message", "Erro ao Excluir o Ponto.");
+                        }
                     }
                 } else {
                     responseJson = objectMapper.createObjectNode();
